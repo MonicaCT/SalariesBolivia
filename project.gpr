@@ -1,0 +1,110 @@
+[Project]
+
+[RP:OPTBASE]
+1=
+
+[RP:UNTITLED_1]
+1=
+
+[RP:OPTIMIZACIÛN2]
+1=
+
+[RP:COREA]
+1=
+
+[RP:TRNSPORT]
+1=
+
+[RP:ABEL]
+1=
+
+[RP:CHENERY]
+1=
+
+[RP:BID]
+1=
+
+[RP:PROCSEL]
+1=
+
+[RP:SCARFMCP]
+1=
+
+[RP:OPTIMIZACIÛN1]
+1=
+
+[RP:123MODELTEC]
+1=
+
+[SOLVERS]
+DNLP=BARON
+MINLP=BARON
+NLP=BARON
+RMINLP=BARON
+LP=CPLEX
+MIP=CPLEX
+MIQCP=CPLEX
+QCP=CPLEX
+RMIP=CPLEX
+RMIQCP=CPLEX
+MPEC=NLPEC
+CNS=PATH
+MCP=PATH
+
+[RP:SHORTVERSION]
+1=
+
+[RP:123MODEL3D]
+1=
+
+[RP:SHORT2]
+1=
+
+[RP:123MODELOPT]
+1=
+
+[RP:123OPT_G]
+1=
+
+[RP:HORIZON]
+1=
+
+[RP:PLOT]
+1=
+
+[RP:XLLINK]
+1=
+
+[RP:XLDUMP]
+1=
+
+[RP:RAMSEY]
+1=
+
+[RP:FROMEXCEL]
+1=
+
+[RP:HONDURAS]
+1=
+
+[MRUFILES]
+1=C:\Mis documentos\gamsdir\Honduras.lst
+2=C:\Mis documentos\gamsdir\Honduras.log
+3=C:\Honduras\Modelo de equilibrio general CGE\ramsey\RAMSEY.GMS
+4=C:\Mis documentos\gamsdir\fromexcel.gms
+5=C:\Mis documentos\gamsdir\fromexcel.lst
+6=C:\Mis documentos\gamsdir\Honduras.gms
+7=C:\Mis documentos\gamsdir\RAMSEY.lst
+8=C:\Mis documentos\gamsdir\fromexcel.log
+9=C:\Mis documentos\gamsdir\Honduras.~gm
+10=C:\Mis documentos\gamsdir\xldump.lst
+
+[OPENWINDOW_1]
+MAXIM=0
+TOP=0
+LEFT=0
+HEIGHT=395
+WIDTH=520
+FILE0=C:\Mis documentos\gamsdir\Honduras.gms
+FILE1=C:\Mis documentos\gamsdir\Honduras.lst
+FILE2=C:\Mis documentos\gamsdir\Honduras.lst

@@ -1,0 +1,21 @@
+B 2 C o m p i l a t i o n
+B 105 Equation Listing    SOLVE jel Using MCP From line 93
+D 106 fmkt
+D 122 cmkt
+D 133 profit
+D 146 income
+B 155 Column Listing      SOLVE jel Using MCP From line 93
+E 156 w
+E 176 p
+E 191 y
+E 206 i
+B 223 Model Statistics    SOLVE jel Using MCP From line 93
+B 241 Solution Report     SOLVE jel Using MCP From line 93
+F 295 fmkt
+F 302 cmkt
+F 309 profit
+F 316 income
+G 318 w
+G 325 p
+G 332 y
+G 339 i

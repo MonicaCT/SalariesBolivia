@@ -1,0 +1,46 @@
+
+--- Job abel.gms Start 03/15/11 15:21:06 WIN-VS8 23.6.3 x86/MS Windows        
+GAMS Rev 236  Copyright (C) 1987-2011 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+          Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+--- Starting compilation
+--- abel.gms(95) 3 Mb
+--- Starting execution: elapsed 0:00:00.125
+--- abel.gms(90) 4 Mb
+--- Generating NLP model abel
+--- abel.gms(92) 6 Mb
+---   15 rows  31 columns  101 non-zeroes
+---   200 nl-code  30 nl-non-zeroes
+--- abel.gms(92) 4 Mb
+--- Executing CONOPT: elapsed 0:00:00.156
+CONOPTD 0.1      Dec 13, 2010 23.6.3 WIN 22848.22869 VS8 x86/MS Windows       
+ 
+ 
+    C O N O P T 3   version 3.14V
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+   Iter Phase Ninf   Infeasibility   RGmax    NSB   Step InItr MX OK
+      0   0        2.5705084680E+03 (Input point)
+                                Pre-triangular equations:        0
+                                Post-triangular equations:      15
+      1   0        0.0000000000E+00 (After pre-processing)
+      2   0        0.0000000000E+00 (After scaling)
+ 
+ ** Feasible solution. Value of objective =    2703.19861021
+ 
+   Iter Phase Ninf     Objective     RGmax    NSB   Step InItr MX OK
+      6   4        2.2519475327E+02 2.2E+00    14 1.0E+00    3 F  T
+     10   4        2.2519458319E+02 5.8E-08    14
+ 
+ ** Optimal solution. Reduced gradient less than tolerance.
+ 
+--- Restarting execution
+--- abel.gms(92) 0 Mb
+--- Reading solution for model abel
+--- Executing after solve: elapsed 0:00:03.031
+--- abel.gms(94) 3 Mb
+*** Status: Normal completion
+--- Job abel.gms Stop 03/15/11 15:21:09 elapsed 0:00:03.047

@@ -1,0 +1,39 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:36:41 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   5  scalar xllinkscalar;
+   6  file xllinkparams  / xllink.txt /; xllinkparams.lw=0; xllinkparams.nw=0; x
+      llinkparams.nd=0;
+EXIT C:\Honduras\Modelo de equilibrio general CGE\inclib\xllink.gms
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:36:41 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Honduras\Modelo de equilibrio gener
+                                          al CGE\inclib\xllink.gms
+     2        8 EXIT           1       8  C:\Honduras\Modelo de equilibrio gener
+                                          al CGE\inclib\xllink.gms
+
+
+COMPILATION TIME     =        0.000 SECONDS      2 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:36:41 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Honduras\Modelo de equilibrio general CGE\inclib\xllink.gms
+Output     C:\Mis documentos\gamsdir\xllink.lst

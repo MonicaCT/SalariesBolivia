@@ -1,0 +1,179 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:56:25 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  *Illustrate use of spreadsheet interfaces XLIMPORT and XLDUMP
+   2   
+   3   option limrow=0;option limcol=0;
+   4   set places
+   5            /newyork,chicago,topeka,totalsupply/
+   6      sources
+   7            /seattle,sandiego,totalneed/
+   8  *$libinclude xlimport places myspread.xls input!a1:e1 cdim=1
+   9  *$libinclude xlimport places myspread.xls input!a1:e1 Row
+  10  display places
+  11   
+  12  *$libinclude xlimport sources myspread.xls input!a2:a4 Col
+  13  display sources
+  14  set destinaton(places)
+  15      source(sources);
+  16   
+  17      destinaton(places)=yes;
+  18      destinaton("totalsupply")=no;
+  19      source(sources)=yes;
+  20      source("totalneed")=no;
+  21   parameter trandata (sources,places) transport data from spreadsheet
+  22             Supply(Sources)   Supply at each source plant in cases
+  23             Need(places)      Amount neeeded at each market destination in 
+      cases;
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xlimport.gms
+  32  $error the xls file "myspread.xls" cannot be found
+****       $333
+**** LINE     18 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xlimport.gm
+                             s
+                             %3  input!a1:e4
+                             %2  myspread.xls
+                             %1  trandata
+**** LINE     24 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+  34   
+  35    supply(source) = trandata(source,"totalsupply");
+****                            $141
+**** LINE     26 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+  36    Need(destinaton) = trandata("totalneed",destinaton);
+  37    Scalar
+  38       prmilecst   freight cost in $ per case per 1000 miles /90/
+  39       loadcost    freight loading cost in $ per case /25/        ;
+  40    Parameter trancost(Sources,places)  transport cost in dollars per case ;
+  41       trancost(Source,Destinaton) =
+  42             loadcost + prmilecst * trandata(Source,Destinaton) ;
+  43    Positive Variable
+  44        transport(Sources,places) shipment quantities in cases;
+  45    Variable
+  46        totalcost total transportation costs in dollars ;
+  47    Equations
+  48           Costsum                 total transport cost -- objective functio
+      n
+  49           supplybal(sources)      supply at sources
+  50           Demandbal(places)       demand at destinations ;
+  51   
+  52    Costsum ..  totalcost  =e=  sum((Source,Destinaton),
+  53             trancost(Source,Destinaton)*transport(Source,Destinaton));
+  54   
+  55    Supplybal(Source) ..
+  56        sum(destinaton, transport(Source,Destinaton))
+  57                =l=  supply(Source) ;
+  58   
+  59      demandbal(Destinaton) ..
+  60       sum(Source, transport(Source,Destinaton))
+  61               =g=  need(Destinaton) ;
+  62   
+  63      Model tranport /all/ ;
+  64      Solve tranport using lp minimizing totalcost ;
+****                                                 $257
+**** LINE     55 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+  65   
+  66  *$libinclude xlexport transport.l myspread.xls output3!a1..d4
+  67  *$libinclude xlexport transport.m myspread.xls output3!f1..i4
+  68  *$libinclude xlexport transport.l myspread.xls output3!a6:d8  /m
+  69  *$libinclude xlexport transport.l myspread.xls output3!f6:i9  /m
+  70  *$libinclude xlexport transport.l myspread.xls output3!j1
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+  97  $error symbol transport.l has no data
+****       $333
+**** LINE     37 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+                             %3  output2!a1
+                             %2  myspread.xls
+                             %1  transport.l
+**** LINE     62 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+ 117  $error symbol transport.l has no data
+****       $333
+**** LINE     37 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+                             %3  output!a1..D4
+                             %2  myspread.xls
+                             %1  transport.l
+**** LINE     63 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+ 137  $error symbol transport.l has no data
+****       $333
+**** LINE     37 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+                             %3  output4!a1..D4
+                             %2  myspread.xls
+                             %1  transport.l
+**** LINE     64 INPUT       C:\Mis documentos\gamsdir\fromexcel.gms
+ 139   
+      #user model library stuff
+      Main topic Linking to other programs
+      Featured item 1 Spreadsheet
+      Featured item 2 XLDUMP.gms
+      Featured item 3 XLIMPORT.gms
+      Featured item 4
+      include myspread.xls
+      Description
+      Illustrate use of spreadsheet interfaces XLIMPORT and XLDUMP
+       
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:56:25 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Error Messages
+
+
+141  Symbol neither initialized nor assigned
+        A wild shot: You may have spurious commas in the explanatory
+        text of a declaration. Check symbol reference list.
+257  Solve statement not checked because of previous errors
+333  Error triggered by message above
+
+**** 6 ERROR(S)   0 WARNING(S)
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:56:25 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Mis documentos\gamsdir\fromexcel.gm
+                                          s
+     2       24 LIBINCLUDE     1      24  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xlimport.gms
+     3       31 IF EXIST       2       7  .C:\Mis documentos\gamsdir\myspread.xl
+                                           s
+     4       33 EXIT           2      19  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xlimport.gms
+     5       71 LIBINCLUDE     1      62  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+     6       75 LIBINCLUDE     5       4  ..C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inc
+                                            lib\xllink.gms
+     7       83 EXIT           6       8  ..C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inc
+                                            lib\xllink.gms
+     8       89 CALL           5      10  .echo transport.l | sed s/\..*// >> C:
+                                           \Mis documentos\gamsdir\225a\symb.scr
+     9       98 EXIT           5      38  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+    10       99 LIBINCLUDE     1      63  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+    11      109 CALL          10      10  .echo transport.l | sed s/\..*// >> C:
+                                           \Mis documentos\gamsdir\225a\symb.scr
+    12      118 EXIT          10      38  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+    13      119 LIBINCLUDE     1      64  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+    14      129 CALL          13      10  .echo transport.l | sed s/\..*// >> C:
+                                           \Mis documentos\gamsdir\225a\symb.scr
+    15      138 EXIT          13      38  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xldump.gms
+
+
+COMPILATION TIME     =        0.381 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Mis documentos\gamsdir\fromexcel.gms
+Output     C:\Mis documentos\gamsdir\fromexcel.lst
+
+**** USER ERROR(S) ENCOUNTERED

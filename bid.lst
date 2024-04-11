@@ -1,0 +1,346 @@
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 1
+Bid Evaluation (BID,SEQ=19)
+C o m p i l a t i o n
+
+
+       
+      A company obtains a number of bids from vendors for the supply
+      of a specified number of units of an item. Most of the submitted
+      bids have prices that depend on the volume of business.
+       
+       
+      Bracken, J, and McCormick, G P, Chapter 3. In Selected Applications of
+      Nonlinear Programming. John Wiley and Sons, New York, 1968, pp. 28-36.
+       
+  13   
+  14  sets  v       vendors       / a, b, c, d, e /
+  15        s       segments      / 1*5 /
+  16        vs(v,s) vendor bit possibilities
+  17        cl      column labels / setup, price, q-min, q-max /
+  18   
+  19  scalar req requirements / 239600.48 / ;
+  20   
+  21    table bid(v,s,cl)  bid data
+  22   
+  23                 setup      price     q-min    q-max
+  24  a.1          3855.84     61.150              33000
+  25  b.1        125804.84     68.099     22000    70000
+  26  b.2                      66.049     70000   100000
+  27  b.3                      64.099    100000   150000
+  28  b.4                      62.119    150000   160000
+  29  c.1         13456.00     62.190             165600
+  30  d.1          6583.98     72.488              12000
+  31  e.1                      70.150              42000
+  32  e.2                      68.150     42000    77000;
+  33   
+  34   
+  35  *  get minimum domains and ripple total cost up the segments
+  36   
+  37  vs(v,s)          = bid(v,s,'q-max');
+  38   
+  39  loop(vs(v,s+1),
+  40     bid(v,s+1,'setup') = bid(v,s,'setup')
+  41                        + bid(v,s,'q-max')*(bid(v,s,'price')-bid(v,s+1,'pric
+      e')));
+  42  display bid;
+  43   
+  44   
+  45  variables  c        total cost
+  46             pl(v,s)  purchase level
+  47             plb(v,s) purchase decision
+  48  binary variable plb;
+  49   
+  50  equations  demand     demand constraint
+  51             costdef    cost definition
+  52             minpl(v,s) min purchase
+  53             maxpl(v,s) max purchase
+  54             oneonly(v) at most one deal;
+  55   
+  56  demand..   req =e= sum(vs, pl(vs));
+  57   
+  58  costdef..  c   =e= sum(vs, bid(vs,'price')*pl(vs)
+  59                           + bid(vs,'setup')*plb(vs));
+  60   
+  61  minpl(vs).. pl(vs) =g= bid(vs,'q-min')*plb(vs);
+  62   
+  63  maxpl(vs).. pl(vs) =l= bid(vs,'q-max')*plb(vs);
+  64   
+  65  oneonly(v)..  sum(vs(v,s), plb(vs)) =l= 1;
+  66   
+  67  model bideval / all /;
+  68   
+  69  option optcr=0.0; solve bideval minimizing c using mip;
+  70   
+
+
+COMPILATION TIME     =        0.001 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 2
+Bid Evaluation (BID,SEQ=19)
+E x e c u t i o n
+
+
+----     42 PARAMETER bid  bid data
+
+          setup       price       q-min       q-max
+
+a.1    3855.840      61.150               33000.000
+b.1  125804.840      68.099   22000.000   70000.000
+b.2  269304.840      66.049   70000.000  100000.000
+b.3  464304.840      64.099  100000.000  150000.000
+b.4  761304.840      62.119  150000.000  160000.000
+c.1   13456.000      62.190              165600.000
+d.1    6583.980      72.488               12000.000
+e.1                  70.150               42000.000
+e.2   84000.000      68.150   42000.000   77000.000
+
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 3
+Bid Evaluation (BID,SEQ=19)
+Equation Listing    SOLVE bideval Using MIP From line 69
+
+
+---- demand  =E=  demand constraint
+
+demand..  - pl(a,1) - pl(b,1) - pl(b,2) - pl(b,3) - pl(b,4) - pl(c,1) - pl(d,1)
+     
+      - pl(e,1) - pl(e,2) =E= -239600.48 ; (LHS = 0, INFES = 239600.48 ***)
+     
+
+---- costdef  =E=  cost definition
+
+costdef..  c - 61.15*pl(a,1) - 68.099*pl(b,1) - 66.049*pl(b,2) - 64.099*pl(b,3)
+     
+      - 62.119*pl(b,4) - 62.19*pl(c,1) - 72.488*pl(d,1) - 70.15*pl(e,1)
+     
+      - 68.15*pl(e,2) - 3855.84*plb(a,1) - 125804.84*plb(b,1)
+     
+      - 269304.84*plb(b,2) - 464304.84*plb(b,3) - 761304.840000001*plb(b,4)
+     
+      - 13456*plb(c,1) - 6583.98*plb(d,1) - 84000*plb(e,2) =E= 0 ; (LHS = 0)
+     
+
+---- minpl  =G=  min purchase
+
+minpl(a,1)..  pl(a,1) =G= 0 ; (LHS = 0)
+     
+minpl(b,1)..  pl(b,1) - 22000*plb(b,1) =G= 0 ; (LHS = 0)
+     
+minpl(b,2)..  pl(b,2) - 70000*plb(b,2) =G= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- maxpl  =L=  max purchase
+
+maxpl(a,1)..  pl(a,1) - 33000*plb(a,1) =L= 0 ; (LHS = 0)
+     
+maxpl(b,1)..  pl(b,1) - 70000*plb(b,1) =L= 0 ; (LHS = 0)
+     
+maxpl(b,2)..  pl(b,2) - 100000*plb(b,2) =L= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- oneonly  =L=  at most one deal
+
+oneonly(a)..  plb(a,1) =L= 1 ; (LHS = 0)
+     
+oneonly(b)..  plb(b,1) + plb(b,2) + plb(b,3) + plb(b,4) =L= 1 ; (LHS = 0)
+     
+oneonly(c)..  plb(c,1) =L= 1 ; (LHS = 0)
+     
+REMAINING 2 ENTRIES SKIPPED
+
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 4
+Bid Evaluation (BID,SEQ=19)
+Column Listing      SOLVE bideval Using MIP From line 69
+
+
+---- c  total cost
+
+c
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       costdef
+
+
+---- pl  purchase level
+
+pl(a,1)
+                (.LO, .L, .UP = -INF, 0, +INF)
+       -1       demand
+      -61.15    costdef
+        1       minpl(a,1)
+        1       maxpl(a,1)
+
+pl(b,1)
+                (.LO, .L, .UP = -INF, 0, +INF)
+       -1       demand
+      -68.099   costdef
+        1       minpl(b,1)
+        1       maxpl(b,1)
+
+pl(b,2)
+                (.LO, .L, .UP = -INF, 0, +INF)
+       -1       demand
+      -66.049   costdef
+        1       minpl(b,2)
+        1       maxpl(b,2)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- plb  purchase decision
+
+plb(a,1)
+                (.LO, .L, .UP = 0, 0, 1)
+    -3855.84    costdef
+   -33000       maxpl(a,1)
+        1       oneonly(a)
+
+plb(b,1)
+                (.LO, .L, .UP = 0, 0, 1)
+  -125804.84    costdef
+   -22000       minpl(b,1)
+   -70000       maxpl(b,1)
+        1       oneonly(b)
+
+plb(b,2)
+                (.LO, .L, .UP = 0, 0, 1)
+  -269304.84    costdef
+   -70000       minpl(b,2)
+  -100000       maxpl(b,2)
+        1       oneonly(b)
+
+REMAINING 6 ENTRIES SKIPPED
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 5
+Bid Evaluation (BID,SEQ=19)
+Model Statistics    SOLVE bideval Using MIP From line 69
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           5     SINGLE EQUATIONS           25
+BLOCKS OF VARIABLES           3     SINGLE VARIABLES           19
+NON ZERO ELEMENTS            68     DISCRETE VARIABLES          9
+
+
+GENERATION TIME      =        0.031 SECONDS      4 Mb  WIN220-143 Jul 27, 2005
+
+
+EXECUTION TIME       =        0.031 SECONDS      4 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          10/25/05 20:36:27 Page 6
+Bid Evaluation (BID,SEQ=19)
+Solution Report     SOLVE bideval Using MIP From line 69
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   bideval             OBJECTIVE  c
+     TYPE    MIP                 DIRECTION  MINIMIZE
+     SOLVER  OSL                 FROM LINE  69
+
+**** SOLVER STATUS     1 NORMAL COMPLETION         
+**** MODEL STATUS      1 OPTIMAL                   
+**** OBJECTIVE VALUE         15210109.5120
+
+ RESOURCE USAGE, LIMIT          0.330      1000.000
+ ITERATION COUNT, LIMIT        25         10000
+
+OSL Version 3 Aug  1, 2005 WIN.OS.NA 22.0 015.032.041.VIS (Oct 30 2003)
+
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU demand     -2.396E+5 -2.396E+5 -2.396E+5   -70.150      
+---- EQU costdef         .         .         .        1.000      
+
+  demand  demand constraint
+  costdef  cost definition
+
+---- EQU minpl  min purchase
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+a.1      .    33000.000     +INF       .         
+b.1      .         .        +INF       .         
+b.2      .         .        +INF       .         
+b.3      .         .        +INF       .         
+b.4      .         .        +INF       .         
+c.1      .    1.6560E+5     +INF       .         
+d.1      .         .        +INF      2.887      
+e.1      .    41000.480     +INF       .         
+e.2      .         .        +INF       .         
+
+---- EQU maxpl  max purchase
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+a.1     -INF       .         .       -9.000      
+b.1     -INF       .         .       -2.051      
+b.2     -INF       .         .       -4.101      
+b.3     -INF       .         .       -6.051      
+b.4     -INF       .         .       -8.031      
+c.1     -INF       .         .       -7.960      
+d.1     -INF       .         .       -0.549      
+e.1     -INF   -999.520      .         .         
+e.2     -INF       .         .       -2.000      
+
+---- EQU oneonly  at most one deal
+
+     LOWER     LEVEL     UPPER    MARGINAL
+
+a     -INF      1.000     1.000      .         
+b     -INF       .        1.000      .         
+c     -INF      1.000     1.000      .         
+d     -INF       .        1.000      .         
+e     -INF      1.000     1.000      .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR c              -INF  1.5210E+7     +INF       .         
+
+  c  total cost
+
+---- VAR pl  purchase level
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+a.1     -INF  33000.000     +INF       .         
+b.1     -INF       .        +INF       .         
+b.2     -INF       .        +INF       .         
+b.3     -INF       .        +INF       .         
+b.4     -INF       .        +INF       .         
+c.1     -INF  1.6560E+5     +INF       .         
+d.1     -INF       .        +INF       .         
+e.1     -INF  41000.480     +INF       .         
+e.2     -INF       .        +INF       .         
+
+---- VAR plb  purchase decision
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+a.1      .        1.000     1.000 -2.931E+5      
+b.1      .         .        1.000 -1.777E+4      
+b.2      .         .        1.000 -1.408E+5      
+b.3      .         .        1.000 -4.433E+5      
+b.4      .         .        1.000 -5.237E+5      
+c.1      .        1.000     1.000 -1.305E+6      
+d.1      .         .        1.000      EPS       
+e.1      .        1.000     1.000      EPS       
+e.2      .         .        1.000 -7.000E+4      
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.011 SECONDS      2 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      c:\mis documentos\gamsdir\bid.gms
+Output     C:\Mis documentos\gamsdir\bid.lst

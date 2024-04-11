@@ -1,0 +1,22 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:26:39 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  set     t         time periods      /1990*2020/
+
+
+COMPILATION TIME     =        0.001 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Honduras\Modelo de equilibrio general CGE\ramsey\horizon.gms
+Output     C:\Mis documentos\gamsdir\horizon.lst

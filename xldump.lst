@@ -1,0 +1,36 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:31:15 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incli
+                                          b\xldump.gms
+     2        4 LIBINCLUDE     1       4  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xllink.gms
+     3       12 EXIT           2       8  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xllink.gms
+     4       18 CALL           1      10  echo  | sed s/\..*// >> C:\Mis documen
+                                          tos\gamsdir\225a\symb.scr
+     5       22 EXIT           1      14  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incli
+                                          b\xldump.gms
+
+
+COMPILATION TIME     =        0.161 SECONDS      2 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:31:15 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+EXECUTION TIME       =        0.027 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xldump.gms
+Output     C:\Mis documentos\gamsdir\xldump.lst

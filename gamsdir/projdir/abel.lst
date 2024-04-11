@@ -1,0 +1,490 @@
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 1
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+C o m p i l a t i o n
+
+
+   2   
+       
+         Linear Quadratic Riccati Equations are solved as a General
+         Nonlinear Programming Problem instead of the usual Matrix
+         Recursion.
+       
+       
+      Kendrick, D, Caution and Probing in a Macroeconomic Model. Journal of
+      Economic Dynamics and Control 4, 2 (1982).
+       
+  14   
+  15   Sets   n     states   / consumpt, invest /
+  16          m     controls / gov-expend, money /
+  17          k     horizon  / 1964-i, 1964-ii, 1964-iii, 1964-iv
+  18                           1965-i, 1965-ii, 1965-iii, 1965-iv /
+  19          ku(k) control horizon
+  20          ki(k) initial period
+  21          kt(k) terminal period ;
+  22   
+  23   Alias (n,np), (m,mp) ;
+  24   
+  25   ku(k) = yes$(ord(k) lt card(k));
+  26   ki(k) = yes$(ord(k) eq 1);
+  27   kt(k) = not ku(k);
+  28   Display k, ki, kt, ku;
+  29   
+  30   Table a(n,np)  state vector matrix
+  31   
+  32            consumpt   invest
+  33   consumpt    .914     -.016
+  34   invest      .097      .424
+  35   
+  36   Table b(n,m)   control vector matrix
+  37   
+  38              gov-expend     money
+  39   consumpt       .305        .424
+  40   invest        -.101       1.459
+  41   
+  42   Table wk(n,np) penalty matrix for states - input
+  43   
+  44            consumpt  invest
+  45   consumpt    .0625
+  46   invest                1
+  47   
+  48   Table lambda(m,mp)  penalty matrix for comtrols
+  49   
+  50                gov-expend   money
+  51   gov-expend      1
+  52   money                      .444
+  53   
+  54   Parameter  c(n)     constant term    / consumpt -59.4,   invest -184.7 /
+  55              xinit(n) initial value    / consumpt 387.9,   invest   85.3 /
+  56              uinit(m) initial controls / gov-expend 110.5, money   147.1 /
+  57              xtilde(n,k)  desired path for x
+  58              utilde(m,k)  desired path for u
+  59              w(n,np,k)    penalty matrix on states ;
+  60   
+  61    w(n,np,ku) = wk(n,np);
+  62    w(n,np,kt) = 100*wk(n,np);
+  63   
+  64   xtilde(n,k) = xinit(n)*1.0075**(ord(k)-1);
+  65   utilde(m,k) = uinit(m)*1.0075**(ord(k)-1);
+  66   
+  67   Display w, xtilde, utilde;
+  68   
+  69   Variables x(n,k)  state variable
+  70             u(m,k)  control variable
+  71             j       criterion
+  72   
+  73   Equations  criterion   criterion definition
+  74              stateq(n,k) state equation ;
+  75   
+  76   criterion..
+  77   
+  78   j =e= .5*sum((k,n,np),
+  79            (x(n,k)-xtilde(n,k))*w(n,np,k)*(x(np,k)-xtilde(np,k)))
+  80       + .5*sum((ku,m,mp),
+  81            (u(m,ku)-utilde(m,ku))*lambda(m,mp)*(u(mp,ku)-utilde(mp,ku)));
+  82   
+  83   stateq(n,k+1)..
+  84   
+  85    x(n,k+1) =e= sum(np, a(n,np)*x(np,k)) + sum(m, b(n,m)*u(m,k)) + c(n);
+  86   
+  87   Model abel /all/;
+  88   
+  89   x.l(n,k)   = xinit(n); u.l(m,k) = uinit(m);
+  90   x.fx(n,ki) = xinit(n);
+  91   
+  92   Solve abel minimizing j using nlp;
+  93   
+  94   Display x.l, u.l;
+  95   
+
+
+COMPILATION TIME     =        0.015 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 2
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+E x e c u t i o n
+
+
+----     28 SET k  horizon
+
+1964-i  ,    1964-ii ,    1964-iii,    1964-iv ,    1965-i  ,    1965-ii 
+1965-iii,    1965-iv 
+
+
+----     28 SET ki  initial period
+
+1964-i
+
+
+----     28 SET kt  terminal period
+
+1965-iv
+
+
+----     28 SET ku  control horizon
+
+1964-i  ,    1964-ii ,    1964-iii,    1964-iv ,    1965-i  ,    1965-ii 
+1965-iii
+
+
+----     67 PARAMETER w  penalty matrix on states
+
+                       1964-i     1964-ii    1964-iii     1964-iv      1965-i
+
+consumpt.consumpt       0.062       0.062       0.062       0.062       0.062
+invest  .invest         1.000       1.000       1.000       1.000       1.000
+
+                +     1965-ii    1965-iii     1965-iv
+
+consumpt.consumpt       0.062       0.062       6.250
+invest  .invest         1.000       1.000     100.000
+
+
+----     67 PARAMETER xtilde  desired path for x
+
+              1964-i     1964-ii    1964-iii     1964-iv      1965-i     1965-ii
+
+consumpt     387.900     390.809     393.740     396.693     399.669     402.666
+invest        85.300      85.940      86.584      87.234      87.888      88.547
+
+       +    1965-iii     1965-iv
+
+consumpt     405.686     408.729
+invest        89.211      89.880
+
+
+----     67 PARAMETER utilde  desired path for u
+
+                1964-i     1964-ii    1964-iii     1964-iv      1965-i
+
+gov-expend     110.500     111.329     112.164     113.005     113.852
+money          147.100     148.203     149.315     150.435     151.563
+
+         +     1965-ii    1965-iii     1965-iv
+
+gov-expend     114.706     115.567     116.433
+money          152.700     153.845     154.999
+
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 3
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+Equation Listing    SOLVE abel Using NLP From line 92
+
+
+---- criterion  =E=  criterion definition
+
+criterion..  (0)*x(consumpt,1964-i) + (0.181828125000003)*x(consumpt,1964-ii)
+     
+      + (0.365019960937506)*x(consumpt,1964-iii)
+     
+      + (0.549585735644538)*x(consumpt,1964-iv)
+     
+      + (0.735535753661868)*x(consumpt,1965-i)
+     
+      + (0.922880396814339)*x(consumpt,1965-ii)
+     
+      + (1.11163012479044)*x(consumpt,1965-iii)
+     
+      + (130.179547572638)*x(consumpt,1965-iv) + (0)*x(invest,1964-i)
+     
+      + (0.639750000000006)*x(invest,1964-ii)
+     
+      + (1.28429812500002)*x(invest,1964-iii)
+     
+      + (1.93368036093753)*x(invest,1964-iv)
+     
+      + (2.58793296364455)*x(invest,1965-i)
+     
+      + (3.2470924608719)*x(invest,1965-ii)
+     
+      + (3.91119565432844)*x(invest,1965-iii)
+     
+      + (458.027962173591)*x(invest,1965-iv) + (0)*u(gov-expend,1964-i)
+     
+      + (0.828750000000014)*u(gov-expend,1964-ii)
+     
+      + (1.66371562500002)*u(gov-expend,1964-iii)
+     
+      + (2.50494349218754)*u(gov-expend,1964-iv)
+     
+      + (3.35248056837892)*u(gov-expend,1965-i)
+     
+      + (4.20637417264179)*u(gov-expend,1965-ii)
+     
+      + (5.0666719789366)*u(gov-expend,1965-iii) + (0)*u(money,1964-i)
+     
+      + (0.489843000000001)*u(money,1964-ii)
+     
+      + (0.983359822500008)*u(money,1964-iii)
+     
+      + (1.48057802116877)*u(money,1964-iv) + (1.98152535632752)*u(money,1965-i)
+     
+      + (2.48622979649999)*u(money,1965-ii)
+     
+      + (2.99471951997375)*u(money,1965-iii) + j =E= 0 ;
+     
+      (LHS = -2506.10426798121, INFES = 2506.10426798121 ****)
+     
+
+---- stateq  =E=  state equation
+
+stateq(consumpt,1964-ii)..  - 0.914*x(consumpt,1964-i) + x(consumpt,1964-ii)
+     
+      + 0.016*x(invest,1964-i) - 0.305*u(gov-expend,1964-i)
+     
+      - 0.424*u(money,1964-i) =E= -59.4 ;
+     
+      (LHS = -61.3487, INFES = 1.94870000000003 ****)
+     
+stateq(consumpt,1964-iii)..  - 0.914*x(consumpt,1964-ii) + x(consumpt,1964-iii)
+     
+      + 0.016*x(invest,1964-ii) - 0.305*u(gov-expend,1964-ii)
+     
+      - 0.424*u(money,1964-ii) =E= -59.4 ;
+     
+      (LHS = -61.3487, INFES = 1.94870000000003 ****)
+     
+stateq(consumpt,1964-iv)..  - 0.914*x(consumpt,1964-iii) + x(consumpt,1964-iv)
+     
+      + 0.016*x(invest,1964-iii) - 0.305*u(gov-expend,1964-iii)
+     
+      - 0.424*u(money,1964-iii) =E= -59.4 ;
+     
+      (LHS = -61.3487, INFES = 1.94870000000003 ****)
+     
+REMAINING 11 ENTRIES SKIPPED
+
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 4
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+Column Listing      SOLVE abel Using NLP From line 92
+
+
+---- x  state variable
+
+x(consumpt,1964-i)
+                (.LO, .L, .UP, .M = 387.9, 387.9, 387.9, 0)
+       (0)      criterion
+       -0.914   stateq(consumpt,1964-ii)
+       -0.097   stateq(invest,1964-ii)
+
+x(consumpt,1964-ii)
+                (.LO, .L, .UP, .M = -INF, 387.9, +INF, 0)
+       (0.1818) criterion
+        1       stateq(consumpt,1964-ii)
+       -0.914   stateq(consumpt,1964-iii)
+       -0.097   stateq(invest,1964-iii)
+
+x(consumpt,1964-iii)
+                (.LO, .L, .UP, .M = -INF, 387.9, +INF, 0)
+       (0.365)  criterion
+        1       stateq(consumpt,1964-iii)
+       -0.914   stateq(consumpt,1964-iv)
+       -0.097   stateq(invest,1964-iv)
+
+REMAINING 13 ENTRIES SKIPPED
+
+---- u  control variable
+
+u(gov-expend,1964-i)
+                (.LO, .L, .UP, .M = -INF, 110.5, +INF, 0)
+       (0)      criterion
+       -0.305   stateq(consumpt,1964-ii)
+        0.101   stateq(invest,1964-ii)
+
+u(gov-expend,1964-ii)
+                (.LO, .L, .UP, .M = -INF, 110.5, +INF, 0)
+       (0.8288) criterion
+       -0.305   stateq(consumpt,1964-iii)
+        0.101   stateq(invest,1964-iii)
+
+u(gov-expend,1964-iii)
+                (.LO, .L, .UP, .M = -INF, 110.5, +INF, 0)
+       (1.6637) criterion
+       -0.305   stateq(consumpt,1964-iv)
+        0.101   stateq(invest,1964-iv)
+
+REMAINING 11 ENTRIES SKIPPED
+
+---- j  criterion
+
+j
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       criterion
+
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 5
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+Model Statistics    SOLVE abel Using NLP From line 92
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS           15
+BLOCKS OF VARIABLES           3     SINGLE VARIABLES           31
+NON ZERO ELEMENTS           101     NON LINEAR N-Z             30
+DERIVATIVE POOL               6     CONSTANT POOL              66
+CODE LENGTH                 200
+
+
+GENERATION TIME      =        0.032 SECONDS      4 Mb  WIN236-236 Feb 11, 2011
+
+
+EXECUTION TIME       =        0.032 SECONDS      4 Mb  WIN236-236 Feb 11, 2011
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 6
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+Solution Report     SOLVE abel Using NLP From line 92
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   abel                OBJECTIVE  j
+     TYPE    NLP                 DIRECTION  MINIMIZE
+     SOLVER  CONOPT              FROM LINE  92
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      2 Locally Optimal           
+**** OBJECTIVE VALUE              225.1946
+
+ RESOURCE USAGE, LIMIT          0.031      1000.000
+ ITERATION COUNT, LIMIT        10    2000000000
+ EVALUATION ERRORS              0             0
+CONOPTD 0.1      Dec 13, 2010 23.6.3 WIN 22848.22869 VS8 x86/MS Windows       
+ 
+ 
+    C O N O P T 3   version 3.14V
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+    The model has 31 variables and 15 constraints
+    with 101 Jacobian elements, 30 of which are nonlinear.
+    The Hessian of the Lagrangian has 30 elements on the diagonal,
+    0 elements below the diagonal, and 30 nonlinear variables.
+ 
+ ** Optimal solution. Reduced gradient less than tolerance.
+ 
+ 
+ CONOPT time Total                            0.016 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+             2nd Derivative evaluations       0.000 =  0.0%
+             Directional 2nd Derivative       0.000 =  0.0%
+ 
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU criterion       .         .         .        1.000      
+
+  criterion  criterion definition
+
+---- EQU stateq  state equation
+
+                     LOWER     LEVEL     UPPER    MARGINAL
+
+consumpt.1964-ii    -59.400   -59.400   -59.400   -10.035      
+consumpt.1964-iii   -59.400   -59.400   -59.400   -11.382      
+consumpt.1964-iv    -59.400   -59.400   -59.400   -12.856      
+consumpt.1965-i     -59.400   -59.400   -59.400   -14.499      
+consumpt.1965-ii    -59.400   -59.400   -59.400   -16.357      
+consumpt.1965-iii   -59.400   -59.400   -59.400   -18.487      
+consumpt.1965-iv    -59.400   -59.400   -59.400   -21.018      
+invest  .1964-ii   -184.700  -184.700  -184.700     3.861      
+invest  .1964-iii  -184.700  -184.700  -184.700     4.583      
+invest  .1964-iv   -184.700  -184.700  -184.700     5.248      
+invest  .1965-i    -184.700  -184.700  -184.700     5.960      
+invest  .1965-ii   -184.700  -184.700  -184.700     6.742      
+invest  .1965-iii  -184.700  -184.700  -184.700     7.656      
+invest  .1965-iv   -184.700  -184.700  -184.700     9.378      
+
+---- VAR x  state variable
+
+                     LOWER     LEVEL     UPPER    MARGINAL
+
+consumpt.1964-i     387.900   387.900   387.900    -8.797      
+consumpt.1964-ii      -INF    389.585     +INF       .         
+consumpt.1964-iii     -INF    391.494     +INF       .         
+consumpt.1964-iv      -INF    393.777     +INF       .         
+consumpt.1965-i       -INF    396.426     +INF       .         
+consumpt.1965-ii      -INF    399.428     +INF       .         
+consumpt.1965-iii     -INF    402.714     +INF       .         
+consumpt.1965-iv      -INF    405.366     +INF       .         
+invest  .1964-i      85.300    85.300    85.300     1.797      
+invest  .1964-ii      -INF     87.675     +INF  -5.809E-8      
+invest  .1964-iii     -INF     88.736     +INF  1.0893E-8      
+invest  .1964-iv      -INF     89.723     +INF  9.4722E-9      
+invest  .1965-i       -INF     90.728     +INF  8.0678E-9      
+invest  .1965-ii      -INF     91.747     +INF  1.0935E-8      
+invest  .1965-iii     -INF     92.554     +INF  -3.429E-8      
+invest  .1965-iv      -INF     89.974     +INF  -8.684E-9      
+
+---- VAR u  control variable
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+gov-expend.1964-i       -INF    113.951     +INF  -4.899E-9      
+gov-expend.1964-ii      -INF    115.263     +INF  -5.197E-9      
+gov-expend.1964-iii     -INF    116.615     +INF  -2.975E-9      
+gov-expend.1964-iv      -INF    118.029     +INF  3.2697E-9      
+gov-expend.1965-i       -INF    119.522     +INF  1.0671E-8      
+gov-expend.1965-ii      -INF    121.118     +INF  1.2221E-8      
+gov-expend.1965-iii     -INF    122.924     +INF  2.6000E-9      
+money     .1964-i       -INF    143.996     +INF       .         
+money     .1964-ii      -INF    144.012     +INF       .         
+money     .1964-iii     -INF    144.346     +INF       .         
+money     .1964-iv      -INF    144.695     +INF       .         
+money     .1965-i       -INF    145.029     +INF       .         
+money     .1965-ii      -INF    145.197     +INF       .         
+money     .1965-iii     -INF    143.100     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR j              -INF    225.195     +INF       .         
+
+  j  criterion
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             03/15/11 15:21:06 Page 7
+Linear Quadratic Control Problem  (ABEL,SEQ=64)
+E x e c u t i o n
+
+
+----     94 VARIABLE x.L  state variable
+
+              1964-i     1964-ii    1964-iii     1964-iv      1965-i     1965-ii
+
+consumpt     387.900     389.585     391.494     393.777     396.426     399.428
+invest        85.300      87.675      88.736      89.723      90.728      91.747
+
+       +    1965-iii     1965-iv
+
+consumpt     402.714     405.366
+invest        92.554      89.974
+
+
+----     94 VARIABLE u.L  control variable
+
+                1964-i     1964-ii    1964-iii     1964-iv      1965-i
+
+gov-expend     113.951     115.263     116.615     118.029     119.522
+money          143.996     144.012     144.346     144.695     145.029
+
+         +     1965-ii    1965-iii     1965-iv
+
+gov-expend     121.118     122.924     110.500
+money          145.197     143.100     147.100
+
+
+
+EXECUTION TIME       =        0.000 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      D:\Cursos Todos\Curso CGE\gamsdir\abel.gms
+Output     C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\abel
+           .lst

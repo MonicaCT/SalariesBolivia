@@ -1,0 +1,117 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:27:10 Page 1
+Read some data from an existing spreadsheet file and plot it useing GNUPLOT
+C o m p i l a t i o n
+
+
+   2   
+   3  *       Begin by seeing if GNUPLOT is installed -- if not,
+   4  *       then exit the program
+   5   
+   6  DE PROGRAMA\GAMS22.0\gnuplot.gih $EXIT
+****   $140     $36     $342
+   7   
+   8   
+   9  SET
+  10          T       TIME PERIODS            /1990*2020/
+  11          TL      TIME PERIODS TO LABEL   /1990, 1995, 2000, 2005, 2010, 201
+      5, 2020/
+  12          H(T)    ALTERNATIVE HORIZONS    /2000,2010,2020/;
+  13   
+  14  parameter
+  15          C(T,H)  Consumption paths for alternative horizons
+  16          I(T,H)  Investment path for alternative horizons;
+  17   
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\XLIMPORT.gms
+  26  $error the xls file "ramsey.xls" cannot be found
+****       $333
+**** LINE     18 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\XLIMPORT.gm
+                             s
+                             %3  C_
+                             %2  ramsey.xls
+                             %1  C
+**** LINE     18 INPUT       C:\Honduras\Modelo de equilibrio general CGE\ramsey
+                             \plot.gms
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\XLIMPORT.gms
+  36  $error the xls file "ramsey.xls" cannot be found
+****       $333
+**** LINE     18 LIBINCLUDE  C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\XLIMPORT.gm
+                             s
+                             %3  I
+                             %2  ramsey.xls
+                             %1  I
+**** LINE     19 INPUT       C:\Honduras\Modelo de equilibrio general CGE\ramsey
+                             \plot.gms
+  38   
+  39  DISPLAY C, I;
+****          $141,141
+**** LINE     21 INPUT       C:\Honduras\Modelo de equilibrio general CGE\ramsey
+                             \plot.gms
+  40   
+  41  *       The following code generates a plot using GNUPLOT:
+  42   
+  43  *       Label missing data:
+  44   
+  45  C(T,H)$(NOT C(T,H)) = NA;
+  46  I(T,H)$(NOT I(T,H)) = NA;
+  47   
+  50   
+  51  $LIBINCLUDE GNUPLOT C
+****                    $282
+**** LINE     33 INPUT       C:\Honduras\Modelo de equilibrio general CGE\ramsey
+                             \plot.gms
+  52   
+  54  $LIBINCLUDE GNUPLOT I
+****                    $282
+**** LINE     36 INPUT       C:\Honduras\Modelo de equilibrio general CGE\ramsey
+                             \plot.gms
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:27:10 Page 2
+Read some data from an existing spreadsheet file and plot it useing GNUPLOT
+Error Messages
+
+
+ 36  '=' or '..' or ':=' or '$=' operator expected
+     rest of statement ignored
+140  Unknown symbol
+141  Symbol neither initialized nor assigned
+        A wild shot: You may have spurious commas in the explanatory
+        text of a declaration. Check symbol reference list.
+282  Unable to open include file
+333  Error triggered by message above
+342  Illegal suffix syntax - has to start with a letter
+
+**** 9 ERROR(S)   0 WARNING(S)
+GAMS Rev 143  Intel/MS Windows                          11/18/05 10:27:10 Page 3
+Read some data from an existing spreadsheet file and plot it useing GNUPLOT
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Honduras\Modelo de equilibrio gener
+                                          al CGE\ramsey\plot.gms
+     2        6 IF EXIST       1       6  C:\ARCHIVOS.gms
+     3       18 LIBINCLUDE     1      18  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\XLIMPORT.gms
+     4       25 IF EXIST       3       7  .C:\Mis documentos\gamsdir\ramsey.xls
+     5       27 EXIT           3      19  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\XLIMPORT.gms
+     6       28 LIBINCLUDE     1      19  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\XLIMPORT.gms
+     7       35 IF EXIST       6       7  .C:\Mis documentos\gamsdir\ramsey.xls
+     8       37 EXIT           6      19  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\XLIMPORT.gms
+
+
+COMPILATION TIME     =        0.105 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Honduras\Modelo de equilibrio general CGE\ramsey\plot.gms
+Output     C:\Mis documentos\gamsdir\plot.lst
+
+**** USER ERROR(S) ENCOUNTERED

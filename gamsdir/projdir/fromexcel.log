@@ -1,0 +1,56 @@
+
+--- Job fromexcel.gms Start 05/23/11 22:50:59 WIN-VS8 23.6.3 x86/MS Windows        
+GAMS Rev 236  Copyright (C) 1987-2011 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+          Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+--- Starting compilation
+--- fromexcel.gms(24) 3 Mb
+--- .xlimport.gms(18) 3 Mb 1 Error
+*** Error 333 in C:\Archivos de programa\GAMS23.6\inclib\xlimport.gms
+    $Error encountered - see listing for details
+--- .xlimport.gms(19) 3 Mb
+--- fromexcel.gms(26) 3 Mb 2 Errors
+*** Error 141 in D:\Cursos Todos\Curso CGE\gamsdir\fromexcel.gms
+    Symbol neither initialized nor assigned
+       A wild shot: You may have spurious commas in the explanatory
+       text of a declaration. Check symbol reference list.
+--- fromexcel.gms(55) 3 Mb 3 Errors
+*** Error 257 in D:\Cursos Todos\Curso CGE\gamsdir\fromexcel.gms
+    Solve statement not checked because of previous errors
+--- fromexcel.gms(62) 3 Mb
+--- .xldump.gms(4) 3 Mb
+--- ..xllink.gms(8) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo transport.l | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(37) 3 Mb 4 Errors
+*** Error 333 in C:\Archivos de programa\GAMS23.6\inclib\xldump.gms
+    $Error encountered - see listing for details
+--- .xldump.gms(38) 3 Mb
+--- fromexcel.gms(63) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo transport.l | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(37) 3 Mb 5 Errors
+*** Error 333 in C:\Archivos de programa\GAMS23.6\inclib\xldump.gms
+    $Error encountered - see listing for details
+--- .xldump.gms(38) 3 Mb
+--- fromexcel.gms(64) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo transport.l | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(37) 3 Mb 6 Errors
+*** Error 333 in C:\Archivos de programa\GAMS23.6\inclib\xldump.gms
+    $Error encountered - see listing for details
+--- .xldump.gms(38) 3 Mb
+--- fromexcel.gms(77) 3 Mb 6 Errors
+*** Status: Compilation error(s)
+--- Job fromexcel.gms Stop 05/23/11 22:51:05 elapsed 0:00:05.671
+Delete file 225a\symb.scr
+Exit code = 2

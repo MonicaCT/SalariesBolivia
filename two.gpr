@@ -1,0 +1,54 @@
+[PROJECT]
+
+[RP:TRNSPORT]
+1=
+
+[RP:RAMSEY]
+1=
+
+[RP:HONDURAS2]
+1=
+
+[RP:UNTITLED_2]
+1=
+
+[RP:UNTITLED_1]
+1=
+
+[RP:GILLIG_MODEL]
+1=
+
+[RP:TWO3MCP]
+1=
+
+[RP:UNTITLED_3]
+1=
+
+[RP:SHOVEN1984]
+1=
+
+[MRUFILES]
+1=D:\Cursos Todos\Curso CGE\gamsdir\Untitled_3.gms
+2=D:\Cursos Todos\Curso CGE\Shoven Whalley JEL84
+3=D:\Cursos Todos\Curso CGE\gamsdir\Untitled_1.gms
+4=D:\Cursos Todos\Curso CGE\gamsdir\Untitled_2.gms
+5=D:\Cursos Todos\Curso CGE\Modelo de equilibrio general CGE\ramsey\RAMSEY.GMS
+
+[OPENWINDOW_1]
+FILE0=D:\Cursos Todos\Curso CGE\gamsdir\Gillig_Model.lst
+FILE1=D:\Cursos Todos\Curso CGE\gamsdir\Shoven1984.lst
+FILE2=D:\Cursos Todos\Curso CGE\gamsdir\trnsport.gms
+FILE3=D:\Cursos Todos\Curso CGE\gamsdir\trnsport.lst
+FILE4=D:\Cursos Todos\Curso CGE\gamsdir\two3mcp.lst
+FILE5=D:\Cursos Todos\Curso CGE\gamsdir\Untitled_1.lst
+FILE6=D:\Cursos Todos\Curso CGE\gamsdir\Untitled_2.lst
+FILE7=D:\Cursos Todos\Curso CGE\gamsdir2\Honduras2.gms
+FILE8=D:\Cursos Todos\Curso CGE\Gillig_Model.gms
+FILE9=D:\Cursos Todos\Curso CGE\Shoven1984.gms
+FILE10=D:\Cursos Todos\Curso CGE\two3mcp.gms
+FILE11=D:\Cursos Todos\Curso CGE\gamsdir\trnsport.lst
+MAXIM=1
+TOP=1
+LEFT=0
+HEIGHT=620
+WIDTH=746

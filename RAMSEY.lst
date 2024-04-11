@@ -1,0 +1,203 @@
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:48:42 Page 1
+Ramsey Model of Optimal Economic Growth
+C o m p i l a t i o n
+
+
+   3  *
+   4  *  This formulation is described in 'GAMS/MINOS: Three examples'
+   5  *  by Alan S. Manne, Department of Operations Research, Stanford
+   6  *  University, May 1986.
+   7  *
+   8  *  The optimal objective value is 2.4875
+   9  *
+  10  *  References:
+  11  *       F P Ramsey: A Mathematical Theory of Saving, Economics Journal,
+  12  *       December 1928.
+  13  *       B Murtagh and M Saunders:  A Projected Lagrangian Algorithm
+  14  *       and its Implementation for Sparse Nonlinear Constraints,
+  15  *       Mathematical Programming Study  16, pp 84-117, 1982,
+  16  *       Section 5.12 Economic Growth Model
+  17   
+  18  *---------------------------------------------------------------------
+  19  * The planning horizon covers the years from 1990 (TFIRST) to 2000
+  20  * (TLAST). The intervening asterisk indicates that this set includes
+  21  * all the integers between these two values. This first statement is
+  22  * the only one that needs to be changed if one wishes to examine a
+  23  * different planning horizon.
+  24  *---------------------------------------------------------------------
+  25   
+  26  $INCLUDE HORIZON.GMS
+****                     $282
+  27   
+  28  SET       TFIRST(T) FIRST PERIOD
+****                   $120
+  29            TLAST(T)  LAST PERIOD;
+  30   
+  31  *---------------------------------------------------------------------
+  32  * Data may also be entered in the form of SCALAR(S), as illustrated
+  33  * below.
+  34  *---------------------------------------------------------------------
+  35   
+  36   SCALARS  BET    DISCOUNT FACTOR           /.95 /
+  37            B      CAPITAL'S VALUE SHARE     /.25 /
+  38            G      LABOR GROWTH RATE         /.03 /
+  39            AC     ABSORPTIVE CAPACITY RATE  /.15/
+  40            K0     INITIAL CAPITAL          /3.00 /
+  41            I0     INITIAL INVESTMENT        /.05 /
+  42            C0     INITIAL CONSUMPTION       /.95 /
+  43            A      OUTPUT SCALING FACTOR
+  44   
+  45   PARAMETERS      BETA(T)  DISCOUNT FACTOR
+  46                   AL(T)    OUTPUT-LABOR SCALING VECTOR;
+  47   
+  48  *-----------------------------------------------------------------------
+  49  * The following statements show how we may avoid entering information
+  50  * about the planning horizon in more than one place.  Here the symbol
+  51  * "$" means "such that"; "ORD" defines the ordinal position in a set;
+  52  * "CARD" defines the cardinality of the set.  Thus, TFIRST is
+  53  * determined by the first member included in the set; and TLAST by the
+  54  * cardinality (the last member) of the set.
+  55  * This seems like a roundabout way to do things, but is useful if we
+  56  * want to be able to change the length of the planning horizon by
+  57  * altering a single entry in the input data.  The same programming style
+  58  * is employed when we calculate the present-value factor BETA(T) and the
+  59  * output-labor vector AL(T).
+  60  *-----------------------------------------------------------------------
+  61   TFIRST(T) = YES$(ORD(T) EQ 1);
+  62   TLAST(T)  = YES$(ORD(T) EQ CARD(T));
+  63   DISPLAY TFIRST, TLAST;
+  64   
+  65   BETA(T)  = BET**ORD(T);
+  66   BETA(TLAST) = BETA(TLAST)/(1-BET);
+  67   
+  68  *-----------------------------------------------------------------------
+  69  * BETA(TLAST), the last period's utility discount factor, is calculated
+  70  * by summing the infinite geometric series from the horizon date onward.
+  71  * Because of the logarithmic form of the utility function, the
+  72  * post-horizon consumption growth term may be dropped from the maximand.
+  73  *-----------------------------------------------------------------------
+  74   
+  75   A     = (C0+I0)/K0**B;
+  76   AL(T) = A*(1+G)**((1-B)*(ORD(T)-1));
+  77   
+  78   DISPLAY BETA, AL;
+  79   
+  80   
+  81   VARIABLES K(T) CAPITAL STOCK (TRILLION RUPEES)
+  82             C(T) CONSUMPTION (TRILLION RUPEES PER YEAR)
+  83             I(T) INVESTMENT (TRILLION RUPEES PER YEAR)
+  84             UTILITY
+  85  *---------------------------------------------------------------------*
+  86  * Note that variables and equations cannot be identified by the same
+  87  * name. That is why the capital stock variables are called K(T), and
+  88  * the capital balance equations are KK(T).
+  89  *---------------------------------------------------------------------*
+  90   EQUATIONS CC(T) CAPACITY CONSTRAINT (TRILLION RUPEES PER YEAR)
+  91             KK(T) CAPITAL BALANCE (TRILLION RUPEES)
+  92             TC(T) TERMINAL CONDITION (PROVIDES FOR POST-TERMINAL GROWTH)
+  93             UTIL  DISCOUNTED LOG OF CONSUMPTION: OBJECTIVE FUNCTION ;
+  94  *---------------------------------------------------------------------*
+  95   
+  96   
+  97   CC(T)..   AL(T)*K(T)**B  =E=  C(T) + I(T);
+  98   
+  99   KK(T+1)..         K(T+1) =E=  K(T) + I(T);
+ 100   
+ 101   TC(TLAST)..   G*K(TLAST) =L=  I(TLAST);
+ 102   
+ 103   UTIL..           UTILITY =E=  SUM(T, BETA(T)*LOG(C(T)));
+ 104   
+ 105  *-----------------------------------------------------------------------
+ 106  * Instead of requiring that "ALL" of these constraints are to be
+ 107  * included, we specify that the RAMSEY model consists of each of the
+ 108  * four individual constraint types.  If, for example, we omit TC, we can
+ 109  * check the sensitivity of the solution to this terminal condition.
+ 110  *-----------------------------------------------------------------------
+ 111   
+ 112   MODEL  RAMSEY   /CC, KK, TC, UTIL/;
+ 113   
+ 114  *-----------------------------------------------------------------------
+ 115  * The following statements represent lower bounds on the individual
+ 116  * variables K(T), C(T) and I(T); a fixed value for the initial period's
+ 117  * capital stock, K(TFIRST); and upper bounds (absorptive capacity
+ 118  * constraints) on I(T). Bounds are required for K and C because
+ 119  * LOG(C(T)) and K(T)**B are defined only for positive values of C and K
+ 120  *-----------------------------------------------------------------------
+ 121   
+ 122   K.LO(T) = K0; C.LO(T) = C0;  I.LO(T) = I0;
+ 123   
+ 124   K.FX(TFIRST) = K.LO(TFIRST);
+****              $171           $171
+ 125   
+ 126   I.UP(T) = I0*((1+AC)**(ORD(T)-1));
+ 127   
+ 128   
+ 129  *-----------------------------------------------------------------------
+ 130   SOLVE RAMSEY MAXIMIZING UTILITY USING NLP;
+****                                           $257
+ 131   
+ 132  *       SAVE THE RESULTS IN A PARAMETER WHICH HAS A COLUMN LABEL
+ 133  *       EQUAL TO THE HORIZON, INCLUDING BASE YEAR VALUES:
+ 134   
+ 135  PARAMETER       CL(*,T)         CONSUMPTION PATH
+ 136                  IL(*,T)         INVESTMENT PATH;
+ 137   
+ 138  CL(T,TLAST)      = C.L(T) + EPS;
+ 139  IL(T,TLAST)      = I.L(T) + EPS;
+ 140   
+ 141  *       Export the data to spreadsheet ranges c_ and i
+ 142  *       with a merge so that we don't lose data which has been
+ 143  *       written for other cases (one column of each range is written
+ 144  *       for the current horizon).
+ 145   
+ 146  *       Note that we do not use range named "C" because Excel barfs.
+ 147   
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xlexport.gms
+LIBINCLUDE C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inclib\xlexport.gms
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:48:42 Page 2
+Ramsey Model of Optimal Economic Growth
+Error Messages
+
+
+120  Unknown identifier entered as set
+171  Domain violation for set
+257  Solve statement not checked because of previous errors
+282  Unable to open include file
+
+**** 5 ERROR(S)   0 WARNING(S)
+GAMS Rev 143  Intel/MS Windows                          11/18/05 22:48:42 Page 3
+Ramsey Model of Optimal Economic Growth
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  C:\Honduras\Modelo de equilibrio gener
+                                          al CGE\ramsey\RAMSEY.GMS
+     2      148 LIBINCLUDE     1     148  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xlexport.gms
+     3      151 LIBINCLUDE     2       3  ..C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inc
+                                            lib\xllink.gms
+     4      159 EXIT           3       8  ..C:\ARCHIVOS DE PROGRAMA\GAMS22.0\inc
+                                            lib\xllink.gms
+     5      169 CALL           2      13  .echo cl | sed s/\..*// >> C:\Mis docu
+                                           mentos\gamsdir\225a\symb.scr
+     6      188 LIBINCLUDE     1     149  .C:\ARCHIVOS DE PROGRAMA\GAMS22.0\incl
+                                           ib\xlexport.gms
+     7      201 CALL           6      13  .echo il | sed s/\..*// >> C:\Mis docu
+                                           mentos\gamsdir\225a\symb.scr
+
+
+COMPILATION TIME     =        0.249 SECONDS      2 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Honduras\Modelo de equilibrio general CGE\ramsey\RAMSEY.GMS
+Output     C:\Mis documentos\gamsdir\RAMSEY.lst
+
+**** USER ERROR(S) ENCOUNTERED

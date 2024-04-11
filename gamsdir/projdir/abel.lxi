@@ -1,0 +1,26 @@
+B 2 C o m p i l a t i o n
+B 102 E x e c u t i o n
+I 103 k
+I 110 ki
+I 115 kt
+I 120 ku
+I 126 w
+I 139 xtilde
+I 152 utilde
+B 167 Equation Listing    SOLVE abel Using NLP From line 92
+D 168 criterion
+D 224 stateq
+B 255 Column Listing      SOLVE abel Using NLP From line 92
+E 256 x
+E 281 u
+E 303 j
+B 312 Model Statistics    SOLVE abel Using NLP From line 92
+B 330 Solution Report     SOLVE abel Using NLP From line 92
+F 372 criterion
+F 380 stateq
+G 394 x
+G 415 u
+G 434 j
+B 448 E x e c u t i o n
+I 449 x
+I 463 u

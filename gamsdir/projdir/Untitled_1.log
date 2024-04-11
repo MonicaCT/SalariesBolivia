@@ -1,0 +1,13 @@
+
+--- Job Untitled_1.gms Start 05/23/11 23:12:12 WIN-VS8 23.6.3 x86/MS Windows        
+GAMS Rev 236  Copyright (C) 1987-2011 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+          Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+--- Starting compilation
+--- Untitled_1.gms(1) 2 Mb 1 Error
+*** Error 190 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_1.gms
+    Text too long, max is 255 characters
+--- Untitled_1.gms(1) 2 Mb 1 Error
+*** Status: Compilation error(s)
+--- Job Untitled_1.gms Stop 05/23/11 23:12:12 elapsed 0:00:00.078
+Exit code = 2

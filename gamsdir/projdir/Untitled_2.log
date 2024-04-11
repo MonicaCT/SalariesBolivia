@@ -1,0 +1,26 @@
+
+--- Job Untitled_2.gms Start 05/23/11 23:25:44 WIN-VS8 23.6.3 x86/MS Windows        
+GAMS Rev 236  Copyright (C) 1987-2011 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+          Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+--- Starting compilation
+--- Untitled_2.gms(1) 2 Mb 3 Errors
+*** Error 409 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+    Unrecognizable item - skip to find a new statement
+      looking for a ';' or a key word to get started again
+*** Error   2 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+    Identifier expected
+*** Error  96 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+    Blank needed between identifier and text
+      (-or- illegal character in identifier)
+      (-or- check for missing ';' on previous line)
+--- Untitled_2.gms(99) 3 Mb 4 Errors
+*** Error 257 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+    Solve statement not checked because of previous errors
+--- Untitled_2.gms(104) 3 Mb 5 Errors
+*** Error 257 in C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+    Solve statement not checked because of previous errors
+--- Untitled_2.gms(104) 3 Mb 5 Errors
+*** Status: Compilation error(s)
+--- Job Untitled_2.gms Stop 05/23/11 23:25:44 elapsed 0:00:00.141
+Exit code = 2

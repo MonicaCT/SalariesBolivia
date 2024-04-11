@@ -1,0 +1,60 @@
+[SOLVERS]
+CNS=CONOPT
+DNLP=CONOPT
+LP=CONOPT
+NLP=CONOPT
+QCP=CONOPT
+RMINLP=CONOPT
+RMIP=CONOPT
+RMIQCP=CONOPT
+
+[RP:TRNSPORT]
+1=
+
+[RP:ABEL]
+1=
+
+[RP:BID]
+1=
+
+[RP:HONDURAS]
+1=
+
+[RP:NLPEC]
+1=
+
+[RP:CHENERY]
+1=
+
+[RP:UNTITLED_2]
+1=
+
+[RP:FROMEXCEL]
+1=
+
+[RP:UNTITLED_1]
+1=
+
+[MRUFILES]
+1=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_1.lst
+2=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_1.gms
+3=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.lst
+4=D:\Cursos Todos\Curso CGE\gamsdir\trnsport.gms
+5=D:\Cursos Todos\Curso CGE\gamsdir\Honduras.gms
+6=D:\Cursos Todos\Curso CGE\gamsdir\bid.gms
+7=D:\Cursos Todos\Curso CGE\gamsdir\abel.gms
+8=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\trnsport.lst
+9=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\trnsport.log
+
+[OPENWINDOW_1]
+FILE0=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\fromexcel.lst
+FILE1=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+FILE2=D:\Cursos Todos\Curso CGE\gamsdir\fromexcel.gms
+FILE3=D:\Cursos Todos\Curso CGE\gamsdir\nlpec.gms
+FILE4=D:\Cursos Todos\Curso CGE\gamsdir2\chenery.gms
+FILE5=C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\Untitled_2.gms
+MAXIM=0
+TOP=0
+LEFT=0
+HEIGHT=513
+WIDTH=662

@@ -1,0 +1,170 @@
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/24/11 20:48:12 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1    SETS Factor Basic factors of production /Labor, Capital/
+   2  Sector Producing industries /Food, NonFood/
+   3  households Households Types /Farm, NonFarm/ ;
+   4  ALIAS (households,households1), (Sector,OtherSector), (Factor,Factor1);
+   5  PARAMETER SigmaC(households) Elasticity of substitution in household CES
+   6  /NonFarm 1.5
+   7  Farm 1.00/ ;
+   8  TABLE Alpha(Sector,households) Consumption share in household CES
+   9  NonFarm Farm
+  10  Food 0.5 0.4
+****     $223
+  11  NonFood 0.5 0.6 ;
+****        $223    $225
+  12  TABLE Endowment(Factor,households) Household endowments of factors
+  13  NonFarm Farm
+  14  Labor 60 5
+****      $223
+  15  Capital 25 2 ;
+****        $223 $226
+  16  Table Intermediateuse(OtherSector,sector) Use in othersector when producin
+      g in sector
+  17  Nonfood Food
+  18  Nonfood 0.00 0.0
+****        $223     $225
+  19  Food 0.00 0.0;
+****     $223 $224$226
+  20  PARAMETER Phi(Sector) scale parameter in CES production function
+  21  /Food 2.2
+  22  NonFood 2.0/ ;
+  23  TABLE Delta(Factor,Sector) distribution parameter in CES production
+  24  Food NonFood
+  25  Labor 0.6 0.7
+****      $223    $226
+  26  Capital 0.4 0.3 ;
+****        $223    $225
+  27  PARAMETER Sigma(Sector) Elasticity of production factor substitution
+  28  /Food 2.0
+  29  NonFood 0.5/
+  30  Parameter TaxShare(households) Household share of tax disbursements
+  31  /NonFarm 0.7
+  32  Farm 0.3/ ;
+  33  Parameter Governmentpurch(sector) Government goods purchase dependence on 
+      revenue
+  34  /Food 0.00
+  35  NonFood 0.00 /
+  36  Scalar Incometax Household tax level /0.001/;
+  37  Parameter CorporateTax(Sector) Tax on corporate earnings
+  38  /food 0, nonfood 0/;
+  39  Parameter TaxDeduction(Households) Household Tax Deductions
+  40  /farm 0, NonFarm 0/;
+  41  POSITIVE VARIABLES
+  42  FACTORPRICE(Factor) Prices for the factors labor and capital
+  43  FACTORQUAN(Factor,Sector) Factor use by a producing sector
+  44  COMPRICE(Sector) Prices of commodities
+  45  DemCommod(Households,Sector) Commodity Demand by Households
+  46  PRODUCTION(Sector) Production Quantity
+  47  HHIncome(households) Household income
+  48  TAXREVENUE Total government tax revenue ;
+  49  EQUATIONS
+  50  FactorMkt(Factor) Factor market balances
+  51  FactorDem(Factor,Sector) Factor demand by a sector
+  52  CommodMkt(Sector) Commodity market balance
+  53  CommodDem(Households,Sector) Commodity Demand by Households
+  54  Profit(Sector) Zero profit condition
+  55  Income(households) Household budget constraint
+  56  GovBal Government budget constraint ;
+  57  FactorMkt(Factor)..
+  58  sum(households,Endowment(Factor,households)) =G=
+  59  sum(Sector,FactorQuan(Factor,Sector)) ;
+  60  FactorDem(Factor,Sector)..
+  61  FACTORQUAN(Factor,Sector) =g=
+  62  Production(Sector)*Phi(Sector)**(sigma(Sector)-1)
+  63  *(Delta(Factor,Sector)
+  64  *( sum(Factor1,Delta(Factor1,Sector)**sigma(Sector)
+  65  *(FactorPrice(Factor1))**(1 - sigma(Sector)))
+  66  **(1/(1-sigma(Sector)))/Phi(Sector))/
+  67  FactorPrice(Factor))**sigma(Sector) ;
+****            $409
+  68  CommodDem(Households,Sector)..
+  69  DemCommod(Households,Sector) =E=
+  70  (HHIncome(households)
+  71  /sum(otherSector,alpha(otherSector,households)
+  72  *ComPrice(OtherSector)**(1-SigmaC(households)))
+  73  )*Alpha(Sector,households) * (1 /ComPrice(Sector))**sigmaC(households);
+****                                                                        $8
+  74  CommodMkt(Sector)..
+  75  Production(Sector) =G=
+  76  sum(households,DemCommod(Households,Sector))
+  77  + Governmentpurch(sector)*TaxRevenue/COMPRICE(Sector)
+  78  + sum(othersector,intermediateuse(sector,othersector)*production(othersect
+      or));
+  79  Profit(Sector)..
+  80  sum(Factor,FactorPrice(Factor)*FactorQuan(Factor,Sector))
+  81  +corporatetax(sector)*(
+  82  ComPrice(Sector)* Production(Sector)
+  83  -sum(othersector,ComPrice(OtherSector)*intermediateuse(othersector,sector)
+  84  *production(sector))
+  85  -sum(Factor,FactorPrice(Factor)*FactorQuan(Factor,Sector)))
+  86  =G= ComPrice(Sector)* Production(Sector) ;
+****    $8
+  87  Income(households)..
+  88  HHIncome(households) =G=
+  89  (1-incometax)*sum(Factor,Endowment(Factor,households) * FactorPrice(Factor
+      ))
+  90  + incometax * TaxDeduction(Households)
+  91  + TaxShare(households) *TaxRevenue ;
+  92  GovBal..
+  93  TaxRevenue =G=
+  94  sum(sector,corporatetax(sector)*(
+  95  ComPrice(Sector)* Production(Sector)
+  96  -sum(Othersector,ComPrice(OtherSector)*intermediateuse(Othersector,sector)
+  97  *production(sector))
+  98  -sum(Factor,FactorPrice(Factor)*FactorQuan(Factor,Sector))))
+  99  +sum(households,incometax
+ 100  *(sum(Factor,Endowment(Factor,households) * FactorPrice(Factor))
+ 101  -TaxDeduction(Households)));
+ 102  MODEL CGEModel /FactorMkt.FACTORPRICE, FactorDem.FACTORQUAN,
+ 103  CommodMkt.COMPRICE,commoddem.DemCommod
+ 104  Profit.PRODUCTION, Income.Hhincome, GovBal.TAXREVENUE/;
+ 105  * lower bounds
+ 106  FACTORPRICE.LO(Factor) = 0.01;
+ 107  COMPRICE.LO(Sector) = 0.01;
+ 108  HHincome.Lo(households) = 0.01;
+ 109  *starting point
+ 110  FACTorPRICE.L(Factor) = 1 ;
+ 111  FACTorQuan.L(Factor,sector) = 1 ;
+ 112  DemCommod.l(Households,Sector)=1;
+ 113  COMPRICE.L(Sector) = 1 ;
+ 114  PRODUCTION.L(Sector) = 10;
+ 115  HHincome.L(households) =
+ 116  sum(Factor, FACTorPRICE.l(Factor) * Endowment(Factor,households));
+ 117  HHincome.fx(households)$(ord(households) =1) = HHincome.L(households);
+ 118  OPTION MCP = PATH;
+ 119  SOLVE CGEModel USING MCP;
+****                          $257
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/24/11 20:48:12 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Error Messages
+
+
+  8  ')' expected
+223  Overlapping row name
+224  Overlapping entry ignored
+225  Floating entry ignored
+226  Multiple entry ignored
+257  Solve statement not checked because of previous errors
+409  Unrecognizable item - skip to find a new statement
+       looking for a ';' or a key word to get started again
+
+**** 19 ERROR(S)   0 WARNING(S)
+
+
+COMPILATION TIME     =        0.078 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      D:\Cursos Todos\Curso CGE\gamsdir\Untitled_2.gms
+Output     D:\Cursos Todos\Curso CGE\gamsdir\Untitled_2.lst
+
+**** USER ERROR(S) ENCOUNTERED

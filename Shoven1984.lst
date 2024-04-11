@@ -1,0 +1,1343 @@
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 1
+Shoven-Whalley Simple General Equilibrium model
+C o m p i l a t i o n
+
+
+      ___________________________________________________________________
+      GAMS code for CGE_model in:
+      Shoven, J, and Whalley, J, Applied G.E. Models. Journal of Economic
+      Literature 22 (1984).
+       
+      By Ferran Sancho,
+      Department of Economics,
+      Universitat Autonoma de Barcelona,
+      08193-Bellaterra (Barcelona) Spain
+      ___________________________________________________________________
+      Model is 2x2x2: 2 goods, 2 factors, 2 consumers
+      With 2 factor taxes and lump-sum redistribution of collections.
+      Code also computes conterfactual SAM
+  17   
+  18  OPTION DECIMALS = 3 ;
+  19   
+  20  * =========================
+  21  * THE ECONOMY
+  22  * =========================
+  23   
+  24  SET N accounts /IND, SER, LAB, CAP, TAXLAB, TAXCAP, RICH, POOR, GOV, TOTAL
+       / ;
+  25  SET NN(N)      /IND, SER, LAB, CAP, TAXLAB, TAXCAP, RICH, POOR, GOV/ ;
+  26  SETS
+  27          I(N)  goods(sectors)    /IND, SER/
+  28          H(N)  consumers         /RICH, POOR/
+  29          F(N)  factors           /LAB, CAP/;
+  30  ALIAS (H,K), (I,J);
+  31   
+  32  * Consumers
+  33  * ============
+  34   
+  35  PARAMETER SIGMAC(H) elasticity of substitution in CES utility
+  36   
+  37         / RICH    1.5 ,  POOR    0.75/;
+  38   
+  39  TABLE ALPHA(H,I) share coefficients in CES utility
+  40   
+  41                  IND     SER
+  42          RICH    0.5     0.5
+  43          POOR    0.3     0.7;
+  44   
+  45  TABLE E(H,F) initial endowments
+  46   
+  47                 LAB     CAP
+  48          RICH            25
+  49          POOR    60         ;
+  50   
+  51  * Producers
+  52  * ===========
+  53   
+  54  PARAMETER PHI(I) scale coefficients in CES production functions
+  55   
+  56          / IND 1.5,  SER 2.0 /;
+  57   
+  58  PARAMETER DELTA(I) share coefficients in CES production functions
+  59   
+  60          / IND  0.6, SER 0.7 / ;
+  61   
+  62  PARAMETER SIGMA(I) elasticity of substitution in CES production functions
+  63   
+  64        /  IND 2.0,   SER 0.5/;
+  65   
+  66  * Government: Fiscal parameters
+  67  * =============================
+  68   
+  69  PARAMETER   TR(H) transfers to consumers;
+  70  PARAMETER TCAP(I) ad-valorem tax on capital;
+  71  PARAMETER TLAB(I) ad-valorem tax on labor  ;
+  72   
+  73  TR(H)   = 0;
+  74  TCAP(I) = 0;
+  75  TLAB(I) = 0;
+  76   
+  77  * =======================================
+  78  * DEFINITION OF GENERAL EQUILIBRIUM MODEL
+  79  * =======================================
+  80   
+  81  POSITIVE VARIABLES
+  82  X(I)       Sectorial output
+  83  P(I)       Prices of goods
+  84  W          Net price of labor
+  85  R          Net price of capital
+  86  WB(I)      After tax proce of labor
+  87  RB(I)      After tax price of capital
+  88  KD(I)      Demand for capital by sectors
+  89  LD(I)      Demand for labor by sectors
+  90  RE(H)      Consumers income
+  91  C(H,I)     Consumers demand ;
+  92   
+  93  FREE VARIABLE
+  94  TAX          Tax collections ;
+  95   
+  96  EQUATIONS
+  97   
+  98  *EQKAP             Equilibrium in capital market
+  99  EQLAB        Equilibrium in labor market
+ 100  EQBIE(I)     Equilibrium in goods markets
+ 101  PRICE(I)     Price equations for goods
+ 102  EQWB(I)             After tax price of labor
+ 103  EQRB(I)      After tax price of capital
+ 104  DEKAP(I)     Demand for capital by sectors
+ 105  DELAB(I)     Demand for labor by sectors
+ 106  DECON(H,I)   Demand by consumers
+ 107  RENTA(H)     Consumers gross income
+ 108  TAXES        Tax collections by government ;
+ 109   
+ 110  *EQKAP..       SUM(H, E(H,'CAP')) =E= SUM(I, KD(I)) ;
+ 111  EQLAB..        SUM(H, E(H,'LAB')) =E= SUM(I, LD(I)) ;
+ 112  EQBIE(I)..     X(I) =E= SUM(H, C(H,I)) ;
+ 113  PRICE(I)..     P(I)*X(I) =E= RB(I)*KD(I) + WB(I)*LD(I) ;
+ 114  EQWB(I)..      WB(I) =E= W*(1+ TLAB(I)) ;
+ 115  EQRB(I)..      RB(I) =E= R*(1+ TCAP(I) ) ;
+ 116   
+ 117  DEKAP(I)..     KD(I)*PHI(I)/X(I) =E=
+ 118       (1-DELTA(I)+DELTA(I)*(WB(I)/RB(I))**(1-SIGMA(I))*((1-DELTA(I))/DELTA(
+      I))**(1-SIGMA(I)))**(SIGMA(I)/(1-SIGMA(I)));
+ 119   
+ 120  DELAB(I)..     LD(I)*PHI(I)/X(I) =E=
+ 121      (DELTA(I)+(1-DELTA(I))*(RB(I)/WB(I))**(1-SIGMA(I))*(DELTA(I)/(1-DELTA(
+      I)))**(1-SIGMA(I)))**(SIGMA(I)/(1-SIGMA(I)));
+ 122   
+ 123  DECON(H,I)..   C(H,I)*(P(I)**SIGMAC(H)) =E= ALPHA(H,I)*RE(H)/
+ 124                                        SUM(J,ALPHA(H,J)*(P(J)**(1-SIGMAC(H)
+      )))  ;
+ 125   
+ 126  RENTA(H)..     RE(H) =E= W*E(H,'LAB')+R*E(H,'CAP') + TR(H)*TAX ;
+ 127  TAXES..               TAX =E= SUM(I, W*LD(I)*TLAB(I) + R*KD(I)*TCAP(I) ) ;
+ 128   
+ 129  MODEL SW /ALL/ ;
+ 130   
+ 131  * Guessinicialization of variables and first run
+ 132  * ==============================================
+ 133   
+ 134  WB.LO(I)  = 0.01 ;
+ 135  RB.LO(I)  = 0.01 ;
+ 136  R.LO      = 0.01 ;
+ 137  P.LO(I)   = 0.01 ;
+ 138  X.LO(I)   = 0.01 ;
+ 139  KD.LO(I)  = 0.01 ;
+ 140  LD.LO(I)  = 0.01 ;
+ 141  RE.LO(H)  = 0.01 ;
+ 142  C.LO(H,I) = 0.01 ;
+ 143   
+ 144  W.FX    = 1;
+ 145  R.L     = 1;
+ 146  WB.L(I) = 1;
+ 147  RB.L(I) = 1;
+ 148  P.L(I)  = 1;
+ 149  X.L(I)  = 10;
+ 150  KD.L(I) = 12;
+ 151  LD.L(I) = 30;
+ 152  RE.L(H) = 40;
+ 153  C.L(H,I)= 20;
+ 154   
+ 155  SOLVE SW MAXIMIZING TAX USING NLP ;
+ 156   
+ 157  * Benchmark utility and income
+ 158  * ============================
+ 159   
+ 160  PARAMETER
+ 161  UTIL0(H)          Initial utilities
+ 162  REN0(H)                Initial income ;
+ 163   
+ 164  UTIL0(H) = (SUM(I,(ALPHA(H,I)**(1/SIGMAC(H)))*(C.L(H,I)**((SIGMAC(H)-1)/SI
+      GMAC(H)))))**(SIGMAC(H)/(SIGMAC(H)-1)) ;
+ 165  REN0(H)  = RE.L(H) ;
+ 166   
+ 167  * ===========
+ 168  * SIMULATIONS
+ 169  * ===========
+ 170   
+ 171  * Policy options
+ 172  * ==============
+ 173   
+ 174  TR('RICH')   = 0.4;
+ 175  TR('POOR')   = 1-TR('RICH') ;
+ 176  TCAP('IND')  = 0.5;
+ 177  TCAP('SER')  = 0  ;
+ 178  TLAB(I)      = 0;
+ 179   
+ 180  * Second run: solving with tax policies
+ 181  * =====================================
+ 182   
+ 183  SOLVE SW MAXIMIZING TAX USING NLP ;
+ 184   
+ 185  DISPLAY "RESUME OF RESULTS";
+ 186   
+ 187  * Counterfactual SAM
+ 188  * ===================
+ 189   
+ 190  PARAMETER SAM(N,N);
+ 191  SAM(N,N) = 0;
+ 192  SAM(I,H) = P.L(I)*C.L(H,I) ;
+ 193  SAM('LAB',J) = W.L*LD.L(J)   ;
+ 194  SAM('CAP',J) = R.L*KD.L(J)   ;
+ 195  SAM('TAXLAB', J) = TLAB(J)*W.L*LD.L(J)   ;
+ 196  SAM('TAXCAP', J) = TCAP(J)*R.L*KD.L(J)   ;
+ 197  SAM(H, 'LAB') = W.L*E(H, 'LAB');
+ 198  SAM(H, 'CAP') = R.L*E(H, 'CAP') ;
+ 199  SAM('GOV','TAXLAB') = SUM(I, TLAB(I)*W.L*LD.L(I)) ;
+ 200  SAM('GOV','TAXCAP') = SUM(I, TCAP(I)*R.L*KD.L(I)) ;
+ 201  SAM(H, 'GOV')= TAX.L*TR(H) ;
+ 202  SAM(N,'TOTAL') = SUM (NN, SAM(NN,N)) ;
+ 203  SAM('TOTAL',N) = SUM (NN, SAM(N,NN)) ;
+ 204   
+ 205  DISPLAY SAM ;
+ 206   
+ 207  * Show results
+ 208  * ============
+ 209   
+ 210  DISPLAY W.L, R.L, X.L, RE.L, P.L, C.L, KD.L, LD.L;
+ 211   
+ 212  PARAMETER
+ 213   
+ 214  UTIL(H)    Consumers utility
+ 215  VUTIL(H)   Percent change in utility
+ 216  EV(H)           Equivalent variation
+ 217  CV(H)           Compensating Variation
+ 218  EVT        EV total
+ 219  CVT        CV total
+ 220  GDPE       GDP-expenditure
+ 221  GDPI       GDP-income
+ 222  LABOR      Use of labor
+ 223  CAPITAL    Use of capital
+ 224  CONS(H)    Consumption by types
+ 225  CONSUMT    Total consumption
+ 226  WAGES      Wages
+ 227  CAPINC     Capital income
+ 228  DWLPIB           Welfare loss as a percent of GDP
+ 229  DWLTAX     Welfare loss as a percent of taxes
+ 230  MDWL       Marginal welfare loss per extra dollar ;
+ 231   
+ 232  DISPLAY  'EFFECTS ON INDIVIDUAL WELFARE' ;
+ 233  UTIL(H)  = (SUM(I,(ALPHA(H,I)**(1/SIGMAC(H)))*(C.L(H,I)**((SIGMAC(H)-1)/SI
+      GMAC(H)))))**(SIGMAC(H)/(SIGMAC(H)-1)) ;
+ 234  VUTIL(H) = 100*(UTIL(H) - UTIL0(H))/UTIL0(H)  ;
+ 235  EV(H) = REN0(H) * ( (UTIL(H) - UTIL0(H) ) / UTIL0(H))  ;
+ 236  CV(H) = RE.L(H) * ( (UTIL(H) - UTIL0(H) ) / UTIL(H))  ;
+ 237  EVT   = SUM(H,EV(H));
+ 238  CVT   = SUM(H,CV(H));
+ 239  DISPLAY VUTIL, EV, CV, EVT, CVT ;
+ 240   
+ 241  DISPLAY   'MACRO VARIABLES' ;
+ 242  CONS(H)    = SUM(I, P.L(I)*C.L(H,I)) ;
+ 243  CONSUMT    = SUM(H, CONS(H)) ;
+ 244  WAGES      = SUM(H, W.L*E(H,'LAB')) ;
+ 245  CAPINC     = SUM(H, R.L*E(H,'CAP')) ;
+ 246  GDPE       = SUM(H, CONS(H));
+ 247  GDPI       = TAX.L+SUM(H, W.L*E(H,'LAB')+R.L*E(H,'CAP')) ;
+ 248  LABOR      = SUM(I, LD.L(I)) ;
+ 249  CAPITAL    = SUM(I, KD.L(I)) ;
+ 250   
+ 251  DISPLAY CONSUMT;
+ 252  DISPLAY WAGES, CAPINC, TAX.L;
+ 253  DISPLAY LABOR, CAPITAL;
+ 254  DISPLAY GDPE, GDPI;
+ 255   
+ 256  DISPLAY 'TAX DISTORTIONS' ;
+ 257   
+ 258  DWLPIB = 100*EVT/GDPI;
+ 259  DWLTAX = 100*EVT/TAX.L;
+ 260  DISPLAY DWLPIB, DWLTAX;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 2
+Shoven-Whalley Simple General Equilibrium model
+Equation Listing    SOLVE SW Using NLP From line 155
+
+
+---- EQLAB  =E=  Equilibrium in labor market
+
+EQLAB..  - LD(IND) - LD(SER) =E= -60 ; (LHS = -60)
+     
+
+---- EQBIE  =E=  Equilibrium in goods markets
+
+EQBIE(IND)..  X(IND) - C(RICH,IND) - C(POOR,IND) =E= 0 ;
+     
+      (LHS = -30, INFES = 30 ****)
+     
+EQBIE(SER)..  X(SER) - C(RICH,SER) - C(POOR,SER) =E= 0 ;
+     
+      (LHS = -30, INFES = 30 ****)
+     
+
+---- PRICE  =E=  Price equations for goods
+
+PRICE(IND)..  (1)*X(IND) + (10)*P(IND) - (30)*WB(IND) - (12)*RB(IND)
+     
+      - (1)*KD(IND) - (1)*LD(IND) =E= 0 ; (LHS = -32, INFES = 32 ****)
+     
+PRICE(SER)..  (1)*X(SER) + (10)*P(SER) - (30)*WB(SER) - (12)*RB(SER)
+     
+      - (1)*KD(SER) - (1)*LD(SER) =E= 0 ; (LHS = -32, INFES = 32 ****)
+     
+
+---- EQWB  =E=  After tax price of labor
+
+EQWB(IND)..  - W + WB(IND) =E= 0 ; (LHS = 0)
+     
+EQWB(SER)..  - W + WB(SER) =E= 0 ; (LHS = 0)
+     
+
+---- EQRB  =E=  After tax price of capital
+
+EQRB(IND)..  - R + RB(IND) =E= 0 ; (LHS = 0)
+     
+EQRB(SER)..  - R + RB(SER) =E= 0 ; (LHS = 0)
+     
+
+---- DEKAP  =E=  Demand for capital by sectors
+
+DEKAP(IND)..  - (0.18)*X(IND) - (0.819299044151115)*WB(IND)
+     
+      + (0.819299044151115)*RB(IND) + (0.15)*KD(IND) =E= 0 ;
+     
+      (LHS = 1.20828402366864, INFES = 1.20828402366864 ****)
+     
+DEKAP(SER)..  - (0.24)*X(SER) - (0.229128784747792)*WB(SER)
+     
+      + (0.229128784747792)*RB(SER) + (0.2)*KD(SER) =E= 0 ;
+     
+      (LHS = 1.64174243050442, INFES = 1.64174243050442 ****)
+     
+
+---- DELAB  =E=  Demand for labor by sectors
+
+DELAB(IND)..  - (0.45)*X(IND) + (0.819299044151115)*WB(IND)
+     
+      - (0.819299044151115)*RB(IND) + (0.15)*LD(IND) =E= 0 ;
+     
+      (LHS = 3.16863905325444, INFES = 3.16863905325444 ****)
+     
+DELAB(SER)..  - (0.6)*X(SER) + (0.229128784747792)*WB(SER)
+     
+      - (0.229128784747792)*RB(SER) + (0.2)*LD(SER) =E= 0 ;
+     
+      (LHS = 4.84174243050442, INFES = 4.84174243050442 ****)
+     
+
+---- DECON  =E=  Demand by consumers
+
+DECON(RICH,IND)..  (25)*P(IND) - (5)*P(SER) - (0.5)*RE(RICH) + (1)*C(RICH,IND)
+      =E= 0 ; (LHS = 0)
+     
+DECON(RICH,SER)..  - (5)*P(IND) + (25)*P(SER) - (0.5)*RE(RICH) + (1)*C(RICH,SER)
+      =E= 0 ; (LHS = 0)
+     
+DECON(POOR,IND)..  (15.9)*P(IND) + (2.1)*P(SER) - (0.3)*RE(POOR)
+     
+      + (1)*C(POOR,IND) =E= 0 ; (LHS = 8, INFES = 8 ****)
+     
+REMAINING ENTRY SKIPPED
+
+
+---- RENTA  =E=  Consumers gross income
+
+RENTA(RICH)..  - 25*R + RE(RICH) =E= 0 ; (LHS = 15, INFES = 15 ****)
+     
+RENTA(POOR)..  - 60*W + RE(POOR) =E= 0 ; (LHS = -20, INFES = 20 ****)
+     
+
+---- TAXES  =E=  Tax collections by government
+
+TAXES..  TAX =E= 0 ; (LHS = 0)
+     
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 3
+Shoven-Whalley Simple General Equilibrium model
+Column Listing      SOLVE SW Using NLP From line 155
+
+
+---- X  Sectorial output
+
+X(IND)
+                (.LO, .L, .UP, .M = 0.01, 10, +INF, 0)
+        1       EQBIE(IND)
+       (1)      PRICE(IND)
+      (-0.18)   DEKAP(IND)
+      (-0.45)   DELAB(IND)
+
+X(SER)
+                (.LO, .L, .UP, .M = 0.01, 10, +INF, 0)
+        1       EQBIE(SER)
+       (1)      PRICE(SER)
+      (-0.24)   DEKAP(SER)
+      (-0.6)    DELAB(SER)
+
+
+---- P  Prices of goods
+
+P(IND)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+      (10)      PRICE(IND)
+      (25)      DECON(RICH,IND)
+      (-5)      DECON(RICH,SER)
+      (15.9)    DECON(POOR,IND)
+       (2.1)    DECON(POOR,SER)
+
+P(SER)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+      (10)      PRICE(SER)
+      (-5)      DECON(RICH,IND)
+      (25)      DECON(RICH,SER)
+       (2.1)    DECON(POOR,IND)
+      (19.9)    DECON(POOR,SER)
+
+
+---- W  Net price of labor
+
+W
+                (.LO, .L, .UP, .M = 1, 1, 1, 0)
+       -1       EQWB(IND)
+       -1       EQWB(SER)
+      -60       RENTA(POOR)
+
+
+---- R  Net price of capital
+
+R
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+       -1       EQRB(IND)
+       -1       EQRB(SER)
+      -25       RENTA(RICH)
+
+
+---- WB  After tax proce of labor
+
+WB(IND)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-30)      PRICE(IND)
+        1       EQWB(IND)
+      (-0.8193) DEKAP(IND)
+       (0.8193) DELAB(IND)
+
+WB(SER)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-30)      PRICE(SER)
+        1       EQWB(SER)
+      (-0.2291) DEKAP(SER)
+       (0.2291) DELAB(SER)
+
+
+---- RB  After tax price of capital
+
+RB(IND)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-12)      PRICE(IND)
+        1       EQRB(IND)
+       (0.8193) DEKAP(IND)
+      (-0.8193) DELAB(IND)
+
+RB(SER)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-12)      PRICE(SER)
+        1       EQRB(SER)
+       (0.2291) DEKAP(SER)
+      (-0.2291) DELAB(SER)
+
+
+---- KD  Demand for capital by sectors
+
+KD(IND)
+                (.LO, .L, .UP, .M = 0.01, 12, +INF, 0)
+      (-1)      PRICE(IND)
+       (0.15)   DEKAP(IND)
+
+KD(SER)
+                (.LO, .L, .UP, .M = 0.01, 12, +INF, 0)
+      (-1)      PRICE(SER)
+       (0.2)    DEKAP(SER)
+
+
+---- LD  Demand for labor by sectors
+
+LD(IND)
+                (.LO, .L, .UP, .M = 0.01, 30, +INF, 0)
+       -1       EQLAB
+      (-1)      PRICE(IND)
+       (0.15)   DELAB(IND)
+
+LD(SER)
+                (.LO, .L, .UP, .M = 0.01, 30, +INF, 0)
+       -1       EQLAB
+      (-1)      PRICE(SER)
+       (0.2)    DELAB(SER)
+
+
+---- RE  Consumers income
+
+RE(RICH)
+                (.LO, .L, .UP, .M = 0.01, 40, +INF, 0)
+      (-0.5)    DECON(RICH,IND)
+      (-0.5)    DECON(RICH,SER)
+        1       RENTA(RICH)
+
+RE(POOR)
+                (.LO, .L, .UP, .M = 0.01, 40, +INF, 0)
+      (-0.3)    DECON(POOR,IND)
+      (-0.7)    DECON(POOR,SER)
+        1       RENTA(POOR)
+
+
+---- C  Consumers demand
+
+C(RICH,IND)
+                (.LO, .L, .UP, .M = 0.01, 20, +INF, 0)
+       -1       EQBIE(IND)
+       (1)      DECON(RICH,IND)
+
+C(RICH,SER)
+                (.LO, .L, .UP, .M = 0.01, 20, +INF, 0)
+       -1       EQBIE(SER)
+       (1)      DECON(RICH,SER)
+
+C(POOR,IND)
+                (.LO, .L, .UP, .M = 0.01, 20, +INF, 0)
+       -1       EQBIE(IND)
+       (1)      DECON(POOR,IND)
+
+REMAINING ENTRY SKIPPED
+
+---- TAX  Tax collections
+
+TAX
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       TAXES
+
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 4
+Shoven-Whalley Simple General Equilibrium model
+Model Statistics    SOLVE SW Using NLP From line 155
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          10     SINGLE EQUATIONS           20
+BLOCKS OF VARIABLES          11     SINGLE VARIABLES           21
+NON ZERO ELEMENTS            65     NON LINEAR N-Z             44
+DERIVATIVE POOL               6     CONSTANT POOL              30
+CODE LENGTH                 164
+
+
+GENERATION TIME      =        0.031 SECONDS      4 Mb  WIN236-236 Feb 11, 2011
+
+
+EXECUTION TIME       =        0.031 SECONDS      4 Mb  WIN236-236 Feb 11, 2011
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 5
+Shoven-Whalley Simple General Equilibrium model
+Solution Report     SOLVE SW Using NLP From line 155
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   SW                  OBJECTIVE  TAX
+     TYPE    NLP                 DIRECTION  MAXIMIZE
+     SOLVER  CONOPT              FROM LINE  155
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      5 Locally Infeasible        
+**** OBJECTIVE VALUE                0.0000
+
+ RESOURCE USAGE, LIMIT          0.047      1000.000
+ ITERATION COUNT, LIMIT        32    2000000000
+ EVALUATION ERRORS              0             0
+CONOPTD 0.1      Dec 13, 2010 23.6.3 WIN 22848.22869 VS8 x86/MS Windows       
+ 
+ 
+    C O N O P T 3   version 3.14V
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Infeasible solution. Reduced gradient less than tolerance.
+ 
+ 
+ CONOPT time Total                            0.047 seconds
+   of which: Function evaluations             0.015 = 31.9%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU EQLAB        -60.000   -60.000   -60.000    -0.076      
+
+  EQLAB  Equilibrium in labor market
+
+---- EQU EQBIE  Equilibrium in goods markets
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .       -0.008      
+SER      .         .         .       -0.028      
+
+---- EQU PRICE  Price equations for goods
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .       -6.878      .        0.062 INFES
+SER      .         .         .        0.071      
+
+---- EQU EQWB  After tax price of labor
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .        1.110      
+SER      .         .         .        3.110      
+
+---- EQU EQRB  After tax price of capital
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .       25.715      
+SER      .         .         .      -24.101      
+
+---- EQU DEKAP  Demand for capital by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .        0.045      
+SER      .         .         .        0.040      
+
+---- EQU DELAB  Demand for labor by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .        0.240      .       -1.000 INFES
+SER      .         .         .       -0.305      
+
+---- EQU DECON  Demand by consumers
+
+            LOWER     LEVEL     UPPER    MARGINAL
+
+RICH.IND      .         .         .       -0.163      
+RICH.SER      .         .         .       -0.114      
+POOR.IND      .         .         .       -0.037      
+POOR.SER      .         .         .       -0.057      
+
+---- EQU RENTA  Consumers gross income
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+RICH      .         .         .       -0.065      
+POOR      .         .         .       -0.069      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU TAXES           .         .         .         EPS       
+
+  TAXES  Tax collections by government
+
+---- VAR X  Sectorial output
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010   109.098     +INF       .         
+SER     0.010   113.884     +INF       .         
+
+---- VAR P  Prices of goods
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     0.137     +INF  4.9665E-8      
+SER     0.010     0.397     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR W              1.000     1.000     1.000      EPS       
+---- VAR R              0.010     0.010     +INF       .         
+
+  W  Net price of labor
+  R  Net price of capital
+
+---- VAR WB  After tax proce of labor
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     1.000     +INF       .         
+SER     0.010     1.000     +INF       .         
+
+---- VAR RB  After tax price of capital
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     0.010     +INF       .         
+SER     0.010     0.010     +INF     33.861      
+
+---- VAR KD  Demand for capital by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010   434.789     +INF       .         
+SER     0.010   278.025     +INF       .         
+
+---- VAR LD  Demand for labor by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010    17.531     +INF       .         
+SER     0.010    42.469     +INF       .         
+
+---- VAR RE  Consumers income
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+RICH     0.010     0.250     +INF       .         
+POOR     0.010    60.000     +INF       .         
+
+---- VAR C  Consumers demand
+
+            LOWER     LEVEL     UPPER    MARGINAL
+
+RICH.IND     0.010     1.145     +INF       .         
+RICH.SER     0.010     0.233     +INF       .         
+POOR.IND     0.010   107.953     +INF       .         
+POOR.SER     0.010   113.651     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR TAX            -INF       .        +INF       .         
+
+  TAX  Tax collections
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             2 INFEASIBLE (INFES)
+                    SUM      7.118
+                    MAX      6.878
+                    MEAN     3.559
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 6
+Shoven-Whalley Simple General Equilibrium model
+Equation Listing    SOLVE SW Using NLP From line 183
+
+
+---- EQLAB  =E=  Equilibrium in labor market
+
+EQLAB..  - LD(IND) - LD(SER) =E= -60 ; (LHS = -60)
+     
+
+---- EQBIE  =E=  Equilibrium in goods markets
+
+EQBIE(IND)..  X(IND) - C(RICH,IND) - C(POOR,IND) =E= 0 ; (LHS = 0)
+     
+EQBIE(SER)..  X(SER) - C(RICH,SER) - C(POOR,SER) =E= 0 ; (LHS = 0)
+     
+
+---- PRICE  =E=  Price equations for goods
+
+PRICE(IND)..  (0.137498059754956)*X(IND) + (109.09802069469)*P(IND)
+     
+      - (17.5310139306931)*WB(IND) - (434.789448870226)*RB(IND) - (0.01)*KD(IND)
+     
+      - (1)*LD(IND) =E= 0 ;
+     
+      (LHS = -6.87814225076938, INFES = 6.87814225076938 ****)
+     
+PRICE(SER)..  (0.397325756949558)*X(SER) + (113.884471469599)*P(SER)
+     
+      - (42.4689860693069)*WB(SER) - (278.024776215177)*RB(SER) - (0.01)*KD(SER)
+     
+      - (1)*LD(SER) =E= 0 ; (LHS = 0)
+     
+
+---- EQWB  =E=  After tax price of labor
+
+EQWB(IND)..  - W + WB(IND) =E= 0 ; (LHS = 0)
+     
+EQWB(SER)..  - W + WB(SER) =E= 0 ; (LHS = 0)
+     
+
+---- EQRB  =E=  After tax price of capital
+
+EQRB(IND)..  - 1.5*R + RB(IND) =E= 0 ; (LHS = -0.005, INFES = 0.005 ****)
+     
+EQRB(SER)..  - R + RB(SER) =E= 0 ; (LHS = 0)
+     
+
+---- DEKAP  =E=  Demand for capital by sectors
+
+DEKAP(IND)..  - (0.0547944424851448)*X(IND) - (0.26308893389626)*WB(IND)
+     
+      + (26.308893389626)*RB(IND) + (0.0137491037000363)*KD(IND) =E= 0 ;
+     
+      (LHS = 0)
+     
+DEKAP(SER)..  - (0.0428730592674282)*X(SER) - (2.29128784747792)*WB(SER)
+     
+      + (229.128784747792)*RB(SER) + (0.017561656775427)*KD(SER) =E= 0 ;
+     
+      (LHS = 0)
+     
+
+---- DELAB  =E=  Demand for labor by sectors
+
+DELAB(IND)..  - (0.00220935015103908)*X(IND) + (0.0026308893389626)*WB(IND)
+     
+      - (0.26308893389626)*RB(IND) + (0.0137491037000363)*LD(IND) =E= 0 ;
+     
+      (LHS = 0.239690686325335, INFES = 0.239690686325335 ****)
+     
+DELAB(SER)..  - (0.00654896797891059)*X(SER) + (0.0229128784747792)*WB(SER)
+     
+      - (2.29128784747792)*RB(SER) + (0.017561656775427)*LD(SER) =E= 0 ;
+     
+      (LHS = 0)
+     
+
+---- DECON  =E=  Demand by consumers
+
+DECON(RICH,IND)..  (0.503102654693036)*P(IND) - (0.0272044001139364)*P(SER)
+     
+      - (0.233466520033095)*RE(RICH) + (0.0509852854094128)*C(RICH,IND) =E= 0 ;
+     
+      (LHS = 1.30528227115789E-12, INFES = 1.30528227115789E-12 ****)
+     
+DECON(RICH,SER)..  - (0.133633203037588)*P(IND) + (0.193143622839759)*P(SER)
+     
+      - (0.233466520033095)*RE(RICH) + (0.250449448196252)*C(RICH,SER) =E= 0 ;
+     
+      (LHS = 0)
+     
+DECON(POOR,IND)..  (143.924900741596)*P(IND) + (11.5430818501067)*P(SER)
+     
+      - (0.406262638931963)*RE(POOR) + (0.225799214811329)*C(POOR,IND) =E= 0 ;
+     
+      (LHS = 1.34150468511507E-10, INFES = 1.34150468511507E-10 ****)
+     
+REMAINING ENTRY SKIPPED
+
+
+---- RENTA  =E=  Consumers gross income
+
+RENTA(RICH)..  - 25*R + RE(RICH) - 0.4*TAX =E= 0 ; (LHS = 0)
+     
+RENTA(POOR)..  - 60*W + RE(POOR) - 0.6*TAX =E= 0 ; (LHS = 0)
+     
+
+---- TAXES  =E=  Tax collections by government
+
+TAXES..  - (217.394724435113)*R - (0.005)*KD(IND) + TAX =E= 0 ;
+     
+      (LHS = -2.17394724435113, INFES = 2.17394724435113 ****)
+     
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 7
+Shoven-Whalley Simple General Equilibrium model
+Column Listing      SOLVE SW Using NLP From line 183
+
+
+---- X  Sectorial output
+
+X(IND)
+                (.LO, .L, .UP, .M = 0.01, 109.09802069469, +INF, 0)
+        1       EQBIE(IND)
+       (0.1375) PRICE(IND)
+      (-0.0548) DEKAP(IND)
+      (-0.0022) DELAB(IND)
+
+X(SER)
+                (.LO, .L, .UP, .M = 0.01, 113.884471469599, +INF, 0)
+        1       EQBIE(SER)
+       (0.3973) PRICE(SER)
+      (-0.0429) DEKAP(SER)
+      (-0.0065) DELAB(SER)
+
+
+---- P  Prices of goods
+
+P(IND)
+                (.LO, .L, .UP, .M = 0.01, 0.137498059754956, +INF, 
+4.96650762737971E-8)
+     (109.098)  PRICE(IND)
+       (0.5031) DECON(RICH,IND)
+      (-0.1336) DECON(RICH,SER)
+     (143.9249) DECON(POOR,IND)
+      (25.5835) DECON(POOR,SER)
+
+P(SER)
+                (.LO, .L, .UP, .M = 0.01, 0.397325756949558, +INF, 0)
+     (113.8845) PRICE(SER)
+      (-0.0272) DECON(RICH,IND)
+       (0.1931) DECON(RICH,SER)
+      (11.5431) DECON(POOR,IND)
+     (134.2956) DECON(POOR,SER)
+
+
+---- W  Net price of labor
+
+W
+                (.LO, .L, .UP, .M = 1, 1, 1, EPS)
+       -1       EQWB(IND)
+       -1       EQWB(SER)
+      -60       RENTA(POOR)
+
+
+---- R  Net price of capital
+
+R
+                (.LO, .L, .UP, .M = 0.01, 0.01, +INF, 0)
+       -1.5     EQRB(IND)
+       -1       EQRB(SER)
+      -25       RENTA(RICH)
+    (-217.3947) TAXES
+
+
+---- WB  After tax proce of labor
+
+WB(IND)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-17.531)  PRICE(IND)
+        1       EQWB(IND)
+      (-0.2631) DEKAP(IND)
+       (0.0026) DELAB(IND)
+
+WB(SER)
+                (.LO, .L, .UP, .M = 0.01, 1, +INF, 0)
+     (-42.469)  PRICE(SER)
+        1       EQWB(SER)
+      (-2.2913) DEKAP(SER)
+       (0.0229) DELAB(SER)
+
+
+---- RB  After tax price of capital
+
+RB(IND)
+                (.LO, .L, .UP, .M = 0.01, 0.01, +INF, 0)
+    (-434.7894) PRICE(IND)
+        1       EQRB(IND)
+      (26.3089) DEKAP(IND)
+      (-0.2631) DELAB(IND)
+
+RB(SER)
+                (.LO, .L, .UP, .M = 0.01, 0.01, +INF, 33.8607303017986)
+    (-278.0248) PRICE(SER)
+        1       EQRB(SER)
+     (229.1288) DEKAP(SER)
+      (-2.2913) DELAB(SER)
+
+
+---- KD  Demand for capital by sectors
+
+KD(IND)
+                (.LO, .L, .UP, .M = 0.01, 434.789448870226, +INF, 0)
+      (-0.01)   PRICE(IND)
+       (0.0137) DEKAP(IND)
+      (-0.005)  TAXES
+
+KD(SER)
+                (.LO, .L, .UP, .M = 0.01, 278.024776215177, +INF, 0)
+      (-0.01)   PRICE(SER)
+       (0.0176) DEKAP(SER)
+
+
+---- LD  Demand for labor by sectors
+
+LD(IND)
+                (.LO, .L, .UP, .M = 0.01, 17.5310139306931, +INF, 0)
+       -1       EQLAB
+      (-1)      PRICE(IND)
+       (0.0137) DELAB(IND)
+
+LD(SER)
+                (.LO, .L, .UP, .M = 0.01, 42.4689860693069, +INF, 0)
+       -1       EQLAB
+      (-1)      PRICE(SER)
+       (0.0176) DELAB(SER)
+
+
+---- RE  Consumers income
+
+RE(RICH)
+                (.LO, .L, .UP, .M = 0.01, 0.25, +INF, 0)
+      (-0.2335) DECON(RICH,IND)
+      (-0.2335) DECON(RICH,SER)
+        1       RENTA(RICH)
+
+RE(POOR)
+                (.LO, .L, .UP, .M = 0.01, 60, +INF, 0)
+      (-0.4063) DECON(POOR,IND)
+      (-0.9479) DECON(POOR,SER)
+        1       RENTA(POOR)
+
+
+---- C  Consumers demand
+
+C(RICH,IND)
+                (.LO, .L, .UP, .M = 0.01, 1.14477401746198, +INF, 0)
+       -1       EQBIE(IND)
+       (0.051)  DECON(RICH,IND)
+
+C(RICH,SER)
+                (.LO, .L, .UP, .M = 0.01, 0.233047548831255, +INF, 0)
+       -1       EQBIE(SER)
+       (0.2504) DECON(RICH,SER)
+
+C(POOR,IND)
+                (.LO, .L, .UP, .M = 0.01, 107.953246677228, +INF, 0)
+       -1       EQBIE(IND)
+       (0.2258) DECON(POOR,IND)
+
+REMAINING ENTRY SKIPPED
+
+---- TAX  Tax collections
+
+TAX
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+       -0.4     RENTA(RICH)
+       -0.6     RENTA(POOR)
+        1       TAXES
+
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 8
+Shoven-Whalley Simple General Equilibrium model
+Model Statistics    SOLVE SW Using NLP From line 183
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          10     SINGLE EQUATIONS           20
+BLOCKS OF VARIABLES          11     SINGLE VARIABLES           21
+NON ZERO ELEMENTS            69     NON LINEAR N-Z             46
+DERIVATIVE POOL               6     CONSTANT POOL              30
+CODE LENGTH                 171
+
+
+GENERATION TIME      =        0.015 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+
+
+EXECUTION TIME       =        0.031 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows             05/25/11 22:17:16 Page 9
+Shoven-Whalley Simple General Equilibrium model
+Solution Report     SOLVE SW Using NLP From line 183
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   SW                  OBJECTIVE  TAX
+     TYPE    NLP                 DIRECTION  MAXIMIZE
+     SOLVER  CONOPT              FROM LINE  183
+
+**** SOLVER STATUS     1 Normal Completion         
+**** MODEL STATUS      5 Locally Infeasible        
+**** OBJECTIVE VALUE                2.1308
+
+ RESOURCE USAGE, LIMIT          0.000      1000.000
+ ITERATION COUNT, LIMIT        12    2000000000
+ EVALUATION ERRORS              0             0
+CONOPTD 0.1      Dec 13, 2010 23.6.3 WIN 22848.22869 VS8 x86/MS Windows       
+ 
+ 
+    C O N O P T 3   version 3.14V
+    Copyright (C)   ARKI Consulting and Development A/S
+                    Bagsvaerdvej 246 A
+                    DK-2880 Bagsvaerd, Denmark
+ 
+ 
+ ** Infeasible solution. Reduced gradient less than tolerance.
+ 
+ 
+ CONOPT time Total                            0.000 seconds
+   of which: Function evaluations             0.000 =  0.0%
+             1st Derivative evaluations       0.000 =  0.0%
+ 
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU EQLAB        -60.000   -60.000   -60.000    -0.076      
+
+  EQLAB  Equilibrium in labor market
+
+---- EQU EQBIE  Equilibrium in goods markets
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .       -0.009      
+SER      .         .         .       -0.028      
+
+---- EQU PRICE  Price equations for goods
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .       -6.860      .        0.062 INFES
+SER      .         .         .        0.071      
+
+---- EQU EQWB  After tax price of labor
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .        1.054      
+SER      .         .         .        3.186      
+
+---- EQU EQRB  After tax price of capital
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .       25.137      
+SER      .         .         .       10.003      
+
+---- EQU DEKAP  Demand for capital by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .         .         .        0.044      
+SER      .         .         .        0.041      
+
+---- EQU DELAB  Demand for labor by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND      .        0.223      .       -1.000  NOPT
+SER      .         .         .       -0.311      
+
+---- EQU DECON  Demand by consumers
+
+            LOWER     LEVEL     UPPER    MARGINAL
+
+RICH.IND      .         .         .       -0.158      
+RICH.SER      .         .         .       -0.113      
+POOR.IND      .         .         .       -0.038      
+POOR.SER      .         .         .       -0.057      
+
+---- EQU RENTA  Consumers gross income
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+RICH      .         .         .       -0.065      
+POOR      .         .         .       -0.069      
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- EQU TAXES           .         .         .       -0.067      
+
+  TAXES  Tax collections by government
+
+---- VAR X  Sectorial output
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010   109.299     +INF       .         
+SER     0.010   116.656     +INF       .         
+
+---- VAR P  Prices of goods
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     0.147     +INF       .         
+SER     0.010     0.397     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR W              1.000     1.000     1.000      EPS       
+---- VAR R              0.010     0.010     +INF     31.774      
+
+  W  Net price of labor
+  R  Net price of capital
+
+---- VAR WB  After tax proce of labor
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     1.000     +INF       .         
+SER     0.010     1.000     +INF       .         
+
+---- VAR RB  After tax price of capital
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010     0.015     +INF       .         
+SER     0.010     0.010     +INF       .         
+
+---- VAR KD  Demand for capital by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010   426.160     +INF       .         
+SER     0.010   284.792     +INF       .         
+
+---- VAR LD  Demand for labor by sectors
+
+       LOWER     LEVEL     UPPER    MARGINAL
+
+IND     0.010    16.497     +INF       .         
+SER     0.010    43.503     +INF       .         
+
+---- VAR RE  Consumers income
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+RICH     0.010     1.102     +INF       .         
+POOR     0.010    61.278     +INF       .         
+
+---- VAR C  Consumers demand
+
+            LOWER     LEVEL     UPPER    MARGINAL
+
+RICH.IND     0.010     4.675     +INF       .         
+RICH.SER     0.010     1.049     +INF       .         
+POOR.IND     0.010   104.623     +INF       .         
+POOR.SER     0.010   115.608     +INF       .         
+
+                       LOWER     LEVEL     UPPER    MARGINAL
+
+---- VAR TAX            -INF      2.131     +INF       .         
+
+  TAX  Tax collections
+
+
+**** REPORT SUMMARY :        1     NONOPT ( NOPT)
+                             1 INFEASIBLE (INFES)
+                    SUM      6.860
+                    MAX      6.860
+                    MEAN     6.860
+                             0  UNBOUNDED
+                             0     ERRORS
+GAMS Rev 236  WIN-VS8 23.6.3 x86/MS Windows            05/25/11 22:17:16 Page 10
+Shoven-Whalley Simple General Equilibrium model
+E x e c u t i o n
+
+
+----    185 RESUME OF RESULTS
+
+----    205 PARAMETER SAM  
+
+               IND         SER         LAB         CAP      TAXCAP        RICH
+
+IND                                                                      0.686
+SER                                                                      0.417
+LAB         16.497      43.503
+CAP          4.262       2.848
+TAXCAP       2.131
+RICH                                             0.250
+POOR                                60.000
+GOV                                                          2.131
+TOTAL       16.030      46.351      60.000       7.110       2.131       1.102
+
+     +        POOR         GOV       TOTAL
+
+IND         15.344                  22.890
+SER         45.934                  46.351
+LAB                                 60.000
+CAP                                  0.250
+TAXCAP                               2.131
+RICH                     0.852       1.102
+POOR                     1.278      61.278
+GOV                                  2.131
+TOTAL       61.278       2.131
+
+
+----    210 VARIABLE W.L                   =        1.000  Net price of labor
+            VARIABLE R.L                   =        0.010  Net price of capital
+
+----    210 VARIABLE X.L  Sectorial output
+
+IND 109.299,    SER 116.656
+
+
+----    210 VARIABLE RE.L  Consumers income
+
+RICH  1.102,    POOR 61.278
+
+
+----    210 VARIABLE P.L  Prices of goods
+
+IND 0.147,    SER 0.397
+
+
+----    210 VARIABLE C.L  Consumers demand
+
+             IND         SER
+
+RICH       4.675       1.049
+POOR     104.623     115.608
+
+
+----    210 VARIABLE KD.L  Demand for capital by sectors
+
+IND 426.160,    SER 284.792
+
+
+----    210 VARIABLE LD.L  Demand for labor by sectors
+
+IND 16.497,    SER 43.503
+
+
+----    232 EFFECTS ON INDIVIDUAL WELFARE
+
+----    239 PARAMETER VUTIL  Percent change in utility
+
+RICH 323.474,    POOR   0.503
+
+
+----    239 PARAMETER EV  Equivalent variation
+
+RICH 0.809,    POOR 0.302
+
+
+----    239 PARAMETER CV  Compensating Variation
+
+RICH 0.842,    POOR 0.307
+
+
+----    239 PARAMETER EVT                  =        1.111  EV total
+            PARAMETER CVT                  =        1.149  CV total
+
+----    241 MACRO VARIABLES
+
+----    251 PARAMETER CONSUMT              =       62.381  Total consumption
+
+----    252 PARAMETER WAGES                =       60.000  Wages
+            PARAMETER CAPINC               =        0.250  Capital income
+            VARIABLE TAX.L                 =        2.131  Tax collections
+
+----    253 PARAMETER LABOR                =       60.000  Use of labor
+            PARAMETER CAPITAL              =      710.952  Use of capital
+
+----    254 PARAMETER GDPE                 =       62.381  GDP-expenditure
+            PARAMETER GDPI                 =       62.381  GDP-income
+
+----    256 TAX DISTORTIONS
+
+----    260 PARAMETER DWLPIB               =        1.781  Welfare loss as a per
+                                                           cent of GDP
+            PARAMETER DWLTAX               =       52.128  Welfare loss as a per
+                                                           cent of taxes
+
+
+EXECUTION TIME       =        0.015 SECONDS      3 Mb  WIN236-236 Feb 11, 2011
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      D:\Cursos Todos\Curso CGE\Shoven1984.gms
+Output     D:\Cursos Todos\Curso CGE\gamsdir\Shoven1984.lst

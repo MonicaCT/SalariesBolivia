@@ -1,0 +1,321 @@
+
+--- Job Honduras.gms Start 03/15/11 15:33:22 WIN-VS8 23.6.3 x86/MS Windows        
+GAMS Rev 236  Copyright (C) 1987-2011 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+          Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+--- Starting compilation
+--- Honduras.gms(299) 3 Mb
+--- .xldump.gms(4) 3 Mb
+--- ..xllink.gms(8) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PXPIB | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(300) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo GRPIB | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(301) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo G | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(302) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PCPRI | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(303) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PINVE | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(304) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PEXPO | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(305) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PIMPO | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(306) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PQSCO | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(307) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PDSDE | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(311) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PRENF | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(312) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo B | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(313) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PDEBT | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(315) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PRFAM | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(316) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo SPRIV | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(317) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo TAX | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(318) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo SG | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(319) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo S | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(320) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo TRANS | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(321) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo FOREI | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(323) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PDOME | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(324) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PCOMP | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(325) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PPIB | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(326) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PQSP | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(327) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PM | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(328) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PE | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(329) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo ER | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(330) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PWE | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(331) 3 Mb
+--- .xldump.gms(10) 3 Mb
+--- call echo PWM | sed s/\..*// >> C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\225a\symb.scr
+sed: can't read and: No such file or directory
+sed: can't read Settings\Rolando\Mis: No such file or directory
+sed: can't read documentos\gamsdir\projdir\225a\symb.scr: No such file or directory
+--- .xldump.gms(73) 3 Mb
+--- Honduras.gms(332) 3 Mb
+--- Starting execution: elapsed 0:00:48.969
+--- Honduras.gms(171) 4 Mb
+--- Generating MCP model model1
+--- Honduras.gms(224) 6 Mb
+---   270 rows  270 columns  819 non-zeroes
+---   1,268 nl-code  358 nl-non-zeroes
+--- Honduras.gms(224) 4 Mb
+--- Executing PATH: elapsed 0:00:49.000
+--- Honduras.gms(224) 4 Mb
+Reading dictionary...
+Reading row data...
+Reading nonlinear data...
+Evaluating functions...
+Checking model...
+Calculating Jacobian...
+
+PATH             Dec 13, 2010 23.6.3 WIN 22848.22869 VS8 x86/MS Windows
+
+270 row/cols, 819 non-zeros, 1.12% dense.
+
+Path 4.7.02 (Fri Feb 11 13:04:22 2011)
+Written by Todd Munson, Steven Dirkse, and Michael Ferris
+
+MCPR: Zero:     0 Single:    32 Double:     0 Forced:     0
+Preprocessed size   : 238
+
+INITIAL POINT STATISTICS
+Maximum of X. . . . . . . . . .  3.5000e+000 var: (GRW(2005))
+Maximum of F. . . . . . . . . .  7.9354e-001 eqn: (CONS(2004))
+Maximum of Grad F . . . . . . .  3.7099e+001 eqn: (QGRW(2005))
+                                            var: (FBC(2005))
+
+INITIAL JACOBIAN NORM STATISTICS
+Maximum Row Norm. . . . . . . .  7.3657e+001 eqn: (QGRW(2006))
+Minimum Row Norm. . . . . . . .  1.0104e+000 eqn: (QX(2005))
+Maximum Column Norm . . . . . .  7.3338e+001 var: (FBC(2005))
+Minimum Column Norm . . . . . .  1.0100e+000 var: (GRW(2018))
+
+Crash Log
+major  func  diff  size  residual    step       prox   (label)
+    0     0             4.5727e+000             0.0e+000 (CONS(2004))
+    1     1     0   238 4.8774e-001  1.0e+000    0.0e+000 (PQEQ(2018))
+pn_search terminated: no basis change.
+
+Major Iteration Log
+major minor  func  grad  residual    step  type prox    inorm  (label)
+    0     0     2     2 4.8774e-001           I 0.0e+000 1.7e-001 (PQEQ(2018))
+    1     1     3     3 1.0576e-002  1.0e+000 SO 0.0e+000 6.6e-003 (EDRAT(2018))
+    2     1     4     4 3.9747e-005  1.0e+000 SO 0.0e+000 2.1e-005 (EDRAT(2018))
+    3     1     5     5 7.3391e-010  1.0e+000 SO 0.0e+000 5.1e-010 (EDRAT(2018))
+
+FINAL STATISTICS
+Inf-Norm of Complementarity . .  5.0862e-010 eqn: (EDRAT(2018))
+Inf-Norm of Normal Map. . . . .  5.0862e-010 eqn: (EDRAT(2018))
+Inf-Norm of Minimum Map . . . .  5.0862e-010 eqn: (EDRAT(2018))
+Inf-Norm of Fischer Function. .  5.0862e-010 eqn: (EDRAT(2018))
+Inf-Norm of Grad Fischer Fcn. .  9.4922e-010 eqn: (PXEQ(2018))
+Two-Norm of Grad Fischer Fcn. .  1.5897e-009
+
+FINAL POINT STATISTICS
+Maximum of X. . . . . . . . . .  3.3628e+000 var: (GRW(2006))
+Maximum of F. . . . . . . . . .  5.0862e-010 eqn: (EDRAT(2018))
+Maximum of Grad F . . . . . . .  3.7099e+001 eqn: (QGRW(2005))
+                                            var: (FBC(2005))
+
+ ** EXIT - solution found.
+
+Major Iterations. . . . 3
+Minor Iterations. . . . 3
+Restarts. . . . . . . . 0
+Crash Iterations. . . . 1
+Gradient Steps. . . . . 0
+Function Evaluations. . 5
+Gradient Evaluations. . 5
+Total Time. . . . . . . 0.094000
+Residual. . . . . . . . 7.339052e-010
+Postsolved residual: 7.3391e-010
+
+--- Restarting execution
+--- Honduras.gms(224) 0 Mb
+--- Reading solution for model model1
+--- Executing after solve: elapsed 0:00:51.391
+--- Honduras.gms(331) 3 Mb
+--- Honduras.gms(360) 3 Mb
+--- Honduras.gms(389) 3 Mb
+--- Honduras.gms(418) 3 Mb
+--- Honduras.gms(447) 3 Mb
+--- Honduras.gms(476) 3 Mb
+--- Honduras.gms(505) 3 Mb
+--- Honduras.gms(534) 3 Mb
+--- Honduras.gms(563) 3 Mb
+--- Honduras.gms(595) 3 Mb
+--- Honduras.gms(624) 3 Mb
+--- Honduras.gms(653) 3 Mb
+--- Honduras.gms(683) 3 Mb
+--- Honduras.gms(712) 3 Mb
+--- Honduras.gms(741) 3 Mb
+--- Honduras.gms(770) 3 Mb
+--- Honduras.gms(799) 3 Mb
+--- Honduras.gms(828) 3 Mb
+--- Honduras.gms(857) 3 Mb
+--- Honduras.gms(887) 3 Mb
+--- Honduras.gms(916) 3 Mb
+--- Honduras.gms(945) 3 Mb
+--- Honduras.gms(974) 3 Mb
+--- Honduras.gms(1003) 3 Mb
+--- Honduras.gms(1032) 3 Mb
+--- Honduras.gms(1061) 3 Mb
+--- Honduras.gms(1090) 3 Mb
+--- Honduras.gms(1119) 3 Mb
+--- Honduras.gms(1120) 3 Mb
+--- Putfile xllinkparams C:\Documents and Settings\Rolando\Mis documentos\gamsdir\projdir\xllink.txt
+--- Honduras.gms(1120) 3 Mb
+*** Status: Normal completion
+--- Job Honduras.gms Stop 03/15/11 15:37:20 elapsed 0:03:57.141
+Delete file 225a\symb.scr

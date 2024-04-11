@@ -1,0 +1,1693 @@
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 1
+123model3D
+C o m p i l a t i o n
+
+
+   2  *ELABORATED ON THE BASIS OF DEVARAJAN S. 1997, VERSION FOR EXCEL BY R.MORA
+      LES
+   3  *AUGUST 2002
+   4   
+   5  SETS  T /2002*2010/;
+   6  PARAMETERS
+   7  *RELATED TO PRODUCTION FUNCTION................................
+   8  GRL     TASA DE CRECIMIENTO DE LA PEA  /0.0231/
+   9  DELTA  TASA DE DEPRECIACION   /0.05/
+  10  AE      PARAMETRO DE EFICIENCIA O TECNOLOGIA /1.123/
+  11  L0     VOLUMEN DE LA PEA A T=0
+  12  L(T)     NUMERO DE OCUPADOS
+  13  K0     STOCK DE CAPITAL A T=0
+  14  R      TASA DE DESCUENTO         /0.03/
+  15  ALFA   ELASTICIDAD PRDUCTO CAPITAL  /0.546/
+  16  F1     CONSTANTE DE LA FUNCION ICOR /2.75/
+  17  F2       PARAMETRO DE FBC /0.3552/
+  18  F3       PARAMETRO DE FBC(-1) /-.2829/
+  19  F4       PARAMETRO DE PIB(-1) EN LA FUNCION FBC /0.2024/
+  20  F5       PARAMETRO DE LA DUMMY EN LA FUNCION FBC /-6.3220/
+  21  DUMMY(T) VARIABLE DUMMY EXOGENA
+  22   /"2002" 0.0
+  23    "2003" 0.0
+  24   "2004" 0.0
+  25   "2005" 0.0
+  26    "2006" 0.0
+  27   "2007" 1.0
+  28   "2008" 0.0
+  29   "2009" 0.0
+  30   "2010" 0.0/;
+  31   
+  32  PARAMETERS
+  33  *EXOGENOUS VARIABLES OF THE 1-2-3 MODEL...................................
+      ........
+  34  TM       TARIFF RATE ARANCELES /0.10/
+  35  TE       EXPORT SUBSIDY RATE  /0.0/
+  36  TS       SALE VALUE ADDED TAX RATE /0.0841/
+  37  TY       DIRECT TAX RATE ON PRIVATE INCOME /0.01/
+  38  SY       SAVING RATE /0.11/
+  39  G0       YEAR BASE REAL GOVERNMENT DEMAND CONSUMPTION  /0.1146/
+  40  G(T)     REAL GOVERNMENT DEMAND CONSUMPTION
+  41  TR       GOVERNMENT TRANSFERS /0.0/
+  42  FT       FOREIGN TRANSFERS TO GOVERNMENT /0.1064/
+  43  RE       FOREING REMITTANCES TO PRIVATE SECTOR /0.040/
+  44  AS        AVERAGE SAVINGS RATE
+  45   
+  46  PARAMETERS
+  47  *FOREING DEBT PARAMETERS..................................................
+      ....
+  48  RATE     INTERNATIONAL INTEREST RATE/0.06/
+  49  DEBT0    INITIAL STOCK OF DEBTS /1.75/
+  50  *BALANCE OF PAYMENTS
+  51  B(T)     BALANCE OF TRADE;
+  52  B(T)=0.218;
+  53  PARAMETERS
+  54  * INICIAL VALUES FOR SOME ENDOGENOUS VARIABLES
+  55  *REAL VALUE
+  56  X21      GDP ANO 2001 /22598.836/
+  57  X0       GDP INICITAL NORMALIZADO /1.0/
+  58  GRW0     TASA INICIAL DE CRECIMIENTO DEL PIB EN % /2.00/
+  59  E0       EXPORT GOOD
+  60  M0       IMPORT GOOD
+  61  DS0      SUPPLY OF DOMESTIC GOOD
+  62  DD0      DEMAND FOR DOMESTIC GOOD
+  63  QS0      SUPPLY OF COMPOSITE GOOD
+  64  QD0      DEMAND OF COMPOSITE GOOD
+  65  Z0       INVESTMENT
+  66  *PRICES
+  67  PM0      IMPORT PRICE /2.0368/
+  68  PE0      EXPORT PRICE/1.5658/
+  69  PD0      PRICE OF DOMESTIC GOOD /2.6167/
+  70  PQ0      PRICE OF COMPOSITE GOOD /2.4878/
+  71  PT0      SALES PRICE /2.31986/
+  72  PX0      GDP DEFLACTOR /2.3299/;
+  73   
+  74  L0= 3031.135/X21;
+  75  K0= 80229.689/X21;
+  76  E0=6168.331/X21;
+  77  M0=6034.8/X21;
+  78  DS0=16430.505/X21;
+  79  DD0=16430.505/X21;
+  80  QS0=22465.305/X21;
+  81  QD0=22465.305/X21;
+  82  Z0=2850.216/X21;
+  83  PARAMETERS
+  84  *CALIBRACION DE LAS FUNCIONES CET Y CES
+  85  SQ       ELASTICITY FOR CESQ /0.85/
+  86  ST       ELASTICITY FOR CET/0.60/
+  87  RT       RHO FOR CET
+  88  BT       SHARE FOR CET
+  89  AT       SCALE FOR CET
+  90  RQ       RHO PARA CESQ
+  91  BQ       SHARE FOR CESQ
+  92  AQ       SCALE FOR CESQ;
+  93   
+  94  *PARA LA FUNCION CET/X
+  95  RT=1/ST+1;
+  96  BT=1/(1+(PD0/PE0)*(E0/DS0)**(RT-1));
+  97  AT=X0/((BT*E0**RT+(1-BT)*DS0**RT)**(1/RT));
+  98  *PATA LA FUNCION CES/Q
+  99  RQ=1/SQ-1;
+ 100  BQ=((PM0/PD0)*(M0/DD0)**(1+RQ))/(1+(PM0/PD0)*(M0/DD0)**(1+RQ));
+ 101  AQ=QS0/((BQ*M0**(-RQ)+(1-BQ)*DD0**(-RQ))**(-1/RQ));
+ 102   
+ 103   
+ 104  PARAMETERS
+ 105  *ECUACIONES PRELIMINARES A LA RESOLUCION DEL BLOQUE
+ 106  ER(T)    19 NUMERAIRE EXCHAGE RATE (DOLARES POR BOLIVIANO)
+ 107  PM(T)    14 IMPORT PRICE EQUATION
+ 108  PE(T)    15 EXPORT PRICE EQUATION
+ 109  PWM0     BASE YEAR WORLD PRICE OF IMPORT GOOD /1.665/
+ 110  PWE0     BASE YEAR WORLD PRICE OF EXPORT GOOD /1.79/
+ 111  PWM(T)   WORLD PRICE OF IMPORT GOOD
+ 112  PWE(T)   WORLD PRICE OF EXPORT GOOD;
+ 113   
+ 114  ER(T)=1;
+ 115  PWM(T)=PWM0*(1.0)**(ORD(T));
+ 116  PWE(T)=PWE0*(1.0)**(ORD(T));
+ 117  PM(T)=ER(T)*PWM(T)*(1+TM);
+ 118  PE(T)=ER(T)*PWE(T)/(1+TE);
+ 119  L(T)=L0*(1+GRL)**(ORD(T));
+ 120  G(T)=G0*(1+GRL)**(ORD(T));
+ 121   
+ 122  VARIABLES
+ 123  *REAL FLOWS
+ 124  FBC(T)      INVERSION SOBRE PIB EN PORCENTAJE
+ 125  GRW(T)      TASA DE CRECIMIENTO DEL PIB EN PORCENTAJE
+ 126  X(T)        1 REAL OUTPUT
+ 127  C(T)        4 REAL AGGREGATE CONSUMPTION
+ 128  *CC(T)       5CONSUMO PER CAPITA
+ 129  E(T)        6 REAL EXPORTS
+ 130  M(T)        7 REAL IMPORTS
+ 131  DS(T)       8 REAL SUPPLY OF DOMESTIC GOOD
+ 132  DD(T)       9 REAL DEMAND FOR DOMESTIC GOOD
+ 133  QS(T)       10 REAL SUPPLY OF COMPOSITE GOOD
+ 134  QD(T)       11 REAL DEMAND OFOR COMPOSITE GOOD
+ 135  Z(T)        12 REAL AGGREGATE INVESTMENT
+ 136  *PRICES
+ 137  PD(T)       15PRODUCER PRICE OF DOMESTIC GOOD
+ 138  PT(T)       16SALE PRICE OF COMPOSITIE GOOD
+ 139  PX(T)       17PRICE OF AGGREGATE OUTPUT
+ 140  PQ(T)       18PRICE OF COMPOSITE GOOD
+ 141  *NOMINAL
+ 142  Y(T)        23TOTAL NOMINAL INCOME
+ 143  DEBT(T)     DEBT ACCUMULATION IN US DOLLAR
+ 144  RENFE(T)     INTEREST ON LOANS IN US DOLLAR;
+ 145  * INITIAL VALUES
+ 146  E.L(T)=E0;
+ 147  M.L(T)=M0;
+ 148  DS.L(T)=DS0;
+ 149  DD.L(T)=DD0;
+ 150  QS.L(T)=QS0;
+ 151  QD.L(T)=QD0;
+ 152  Z.L(T)=Z0;
+ 153  X.L(T)=X0;
+ 154  QS.L(T)=QS0;
+ 155  Y.L(T)=0.001;
+ 156  FBC.L(T)=0.09;
+ 157  GRW.L(T)=1.0;
+ 158  *INITIAL PRICES VALUES
+ 159  PT.L(T)=PT0;
+ 160  PD.L(T)=PD0;
+ 161  *PD.LO(T)=0.000000001;
+ 162  PQ.L(T)=PQ0;
+ 163  PX.L(T)=PX0;
+ 164   
+ 165  EQUATIONS
+ 166  *THE DYNAMIC OF THE MODEL.................................................
+      ..
+ 167  QFBC(T)       2B DEFINICION DE FBC EN PORCENTAJE
+ 168  QGRW(T)       2C TASA DE CRECIMIENTO DEL PIB
+ 169  QX(T)         3FUNCION DE PRODUCCION
+ 170  *THE 1-2-3 MODEL..........................................................
+      ..
+ 171  CETEQ(T)      5CET TRANSFORMATION
+ 172  ARMG(T)       6SYPPLY OF GOODS
+ 173  DEM(T)        7DOMESTIC DEMAND
+ 174  EDRAT(T)      8E D RATIO
+ 175  MDRAT(T)      9M D RATIO
+ 176  INC(T)        11TOTAL HOUSEHOLD INCOME
+ 177  CONS(T)       13PRIVATE CONSUMPTION FUNCTION
+ 178  PTEQ(T)    16SALES PRICE EQUATION
+ 179  PXEQ(T)    17OUTPUT PRICE EQUATION
+ 180  PQEQ(T)    18SUPPLY PARICE EQUATION
+ 181  DEQ(T)     20EQUILIBRIUM IN THE DOMESTIC GOOD MARKET
+ 182  QEQ(T)     21EQUILIBRIUM IN THE COMPOSITE GOOD MARKET
+ 183  CABAL(T)   22EQUILIBRIUM IN THE COURRANT ACCOUNT BALANCE
+ 184  QDEBT(T)   DEBT ACCUMULATION
+ 185  QRENFE(T)   INTERESTS ON LOANS;
+ 186   
+ 187  *THE EQUATIONS............................................................
+      ....
+ 188  *the dinamic of the model
+ 189  QFBC(T)..   FBC(T)*X(T)=E=100*Z(T);
+ 190  QGRW(T)..   GRW(T)=E=GRW0$(ORD(T)=1)+(F1+F2*FBC(T)+F3*FBC(T-1)+F4*GRW(T-1)
+      +F5*DUMMY(T))$(ORD(T) GT 1);
+ 191  QX(T)..     X(T)=E=X0*(1+GRW0/100)$(ORD(T)=1)+(1+GRW(T)/100)*X(T-1);
+ 192  *the 1-2-3 model
+ 193  CETEQ(T)..  X(T)=E=AT*(BT*E(T)**(RT)+(1-BT)*DS(T)**(RT))**(1/RT);
+ 194  ARMG(T)..   QS(T)=E=AQ*(BQ*M(T)**(-RQ)+(1-BQ)*DD(T)**(-RQ))**(-1/RQ);
+ 195  DEM(T)..    Z(T)=E=QD(T)-C(T)-G(T);
+ 196  EDRAT(T)..  E(T)=E=DS(T)*((PE(T)/PD(T))/(BT/(1-BT)))**(1/(RT-1));
+ 197  MDRAT(T)..  M(T)=E=DD(T)*((PD(T)/PM(T))*(BQ/(1-BQ)))**(1/(RQ+1));
+ 198  *NOMINAL
+ 199  INC(T)..    Y(T)=E=PX(T)*X(T)+TR*PQ(T)+RE*ER(T);
+ 200  *REAL
+ 201  CONS(T)..   C(T)=E=Y(T)*(1-TY-SY)/PT(T);
+ 202  *PRICES
+ 203  PTEQ(T)..  PT(T)=E=PQ(T)*(1+TS);
+ 204  PXEQ(T)..  PX(T)*X(T)=E=(PE(T)*E(T)+PD(T)*DS(T));
+ 205  PQEQ(T)..  PQ(T)*QS(T)=E=(PM(T)*M(T)+PD(T)*DD(T));
+ 206  *EQUILIBRIUM CONDITIONS
+ 207  DEQ(T)..   DD(T)=E=DS(T);
+ 208  QEQ(T)..   QD(T)=E=QS(T);
+ 209  CABAL(T).. (PWM(T)*M(T)+RENFE(T))-PWE(T)*E(T)-FT-RE=E=B(T);
+ 210  *DEBT RELATIONS
+ 211  QDEBT(T)..   DEBT(T)=E=DEBT0$(ORD(T)=1)+B(T)+DEBT(T-1)$(ORD(T) GT 1);
+ 212  QRENFE(T)..  RENFE(T)=E=RATE*DEBT(T);
+ 213   
+ 214  Model model1 square base model / all / ;
+ 215  *SOLVE MODEL1 USING DNLP MINIMMIZING DIF ;
+ 216  Solve model1 using MCP;
+ 217   
+ 218  PARAMETERS
+ 219  *ECUACIONES POSTERIORES A LA RESOLUCION DEL BLOQUE
+ 220  TAX(T)   10 GOVERNMENT NOMINAL REVENU
+ 221  SG(T)    23 GOVERNMENT NOMINAL INCOME OR SAVING
+ 222  S(T)     12 NOMINAL TOTAL SAVING
+ 223  YREAL(T) INGRESO NOMINAL Y DEFLACTADO POR PT
+ 224  CC(T)    CONSUMO REAL PER CAPITA
+ 225  SPRIV(T) AHORRO PRIVADO
+ 226  INTG(T)  INTERES DE LA DEUDA EXTERNA EN DOLARES
+ 227  TRANS(T)  TRANSFERENCIAS DEL GOBIERNO AL SECTOR PRIVADO
+ 228  FOREI(T)  TRANSFERENCIAS DEL EXTRANJERO AL GOBIERNO
+ 229  TRAD(T)   INVESTMENT LESS TOTAL SAVING
+ 230  TRADB(T)  COURRANT ACCOUNT;
+ 231   
+ 232  *COMPLEMENTARY EQUATIONS
+ 233  *NOMINAL VARIABLES...............
+ 234  TAX(T)=TM*PWM(T)*ER(T)*M.L(T)-TE*PE(T)*E.L(T)+TS*PQ.L(T)*QD.L(T)+TY*Y.L(T)
+      +FT*ER(T);
+ 235  SG(T)=TAX(T)-G(T)*PT.L(T)-TR*PQ.L(T)-RENFE.L(T)*ER(T);
+ 236  S(T)=SY*Y.L(T)+ER(T)*B(T)+SG(T);
+ 237  *REAL VARIABLES..............
+ 238  CC(T)=C.L(T)/L(T);
+ 239  YREAL(T)=Y.L(T)/PT.L(T);
+ 240  *VERIFICACION S=I Y CUMPLIMIENTO BALANZA DE PAGOS..............
+ 241  TRAD(T)=PT.L(T)*Z.L(T)-S(T);
+ 242  TRADB(T)=PWM(T)*M.L(T)-PWE(T)*E.L(T)+RENFE.L(T)-FT-RE;
+ 243   
+ 244  *PARA EL ANALISIS POSTERIOR
+ 245  TRANS(T)= TR*PQ.L(T);
+ 246  FOREI(T)= FT*ER(T);
+ 247  SPRIV(T)=S(T)-SG(T)-ER(T)*B(T);
+ 248   
+ 249  DISPLAY TAX,SG,S;
+ 250  DISPLAY TRAD,TRADB;
+ 251  DISPLAY X.L,E.L,M.L,GRW.L,Z.L,PX.L;
+ 252  DISPLAY ST,SQ,RT,BT,AT;
+ 253  DISPLAY RQ,BQ,AQ;
+ 254  DISPLAY X0;
+ 255   
+      *CUENTAS NACIONALES A PRECIOS CONSTANTES
+      $libinclude xldump X.L C:\alvaro\modelo\MOD123D.xls X
+      $ontext
+      $libinclude xldump G MOD123D.xls G
+      $libinclude xldump C.L MOD123D.xls C
+      $libinclude xldump Z.L MOD123D.xls Z
+      $libinclude xldump E.L MOD123D.xls E
+      $libinclude xldump M.L MOD123D.xls M
+      $libinclude xldump QS.L MOD123D.xls Q
+      $libinclude xldump DS.L MOD123D.xls D
+       
+      *BALANZA DE PAGOS EN DOLARES
+       
+      $libinclude xldump RENFE.L MOD123D.xls RENFE
+      $libinclude xldump B MOD123D.xls B
+      $libinclude xldump DEBT.L MOD123D.xls DEBT
+      *CUENTAS SECTORIALES
+      $libinclude xldump Y.L   MOD123D.xls RFAM
+      $libinclude xldump SPRIV MOD123D.xls SPRIV
+      $libinclude xldump TAX   MOD123D.xls RGOV
+      $libinclude xldump SG    MOD123D.xls SG
+      $libinclude xldump S    MOD123D.xls S
+      $libinclude xldump TRANS MOD123D.xls TRAN
+      $libinclude xldump FOREI MOD123D.xls FOREI
+      *PRECIOS
+      $libinclude xldump PD.L  MOD123D.xls PD
+      $libinclude xldump PT.L  MOD123D.xls PT
+      $libinclude xldump PX.L  MOD123D.xls PX
+      $libinclude xldump PQ.L  MOD123D.xls PQ
+      $libinclude xldump PM    MOD123D.xls PM
+      $libinclude xldump PE    MOD123D.xls PE
+      $libinclude xldump ER    MOD123D.xls ER
+      $libinclude xldump PWE    MOD123D.xls PWE
+      $libinclude xldump PWM    MOD123D.xls PWM
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 2
+123model3D
+Equation Listing    SOLVE model1 Using MCP From line 216
+
+
+---- QFBC  =E=  2B DEFINICION DE FBC EN PORCENTAJE
+
+QFBC(2002)..  (1)*FBC(2002) + (0.09)*X(2002) - 100*Z(2002) =E= 0 ;
+     
+      (LHS = -12.5222248066228, INFES = 12.5222248066228 ***)
+     
+QFBC(2003)..  (1)*FBC(2003) + (0.09)*X(2003) - 100*Z(2003) =E= 0 ;
+     
+      (LHS = -12.5222248066228, INFES = 12.5222248066228 ***)
+     
+QFBC(2004)..  (1)*FBC(2004) + (0.09)*X(2004) - 100*Z(2004) =E= 0 ;
+     
+      (LHS = -12.5222248066228, INFES = 12.5222248066228 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- QGRW  =E=  2C TASA DE CRECIMIENTO DEL PIB
+
+QGRW(2002)..  GRW(2002) =E= 2 ; (LHS = 1, INFES = 1 ***)
+     
+QGRW(2003)..  0.2829*FBC(2002) - 0.3552*FBC(2003) - 0.2024*GRW(2002) + GRW(2003)
+      =E= 2.75 ; (LHS = 0.791093, INFES = 1.958907 ***)
+     
+QGRW(2004)..  0.2829*FBC(2003) - 0.3552*FBC(2004) - 0.2024*GRW(2003) + GRW(2004)
+      =E= 2.75 ; (LHS = 0.791093, INFES = 1.958907 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- QX  =E=  3FUNCION DE PRODUCCION
+
+QX(2002)..  X(2002) =E= 1.02 ; (LHS = 1, INFES = 0.02 ***)
+     
+QX(2003)..  - (0.01)*GRW(2003) - (1.01)*X(2002) + X(2003) =E= 0 ;
+     
+      (LHS = -0.01, INFES = 0.01 ***)
+     
+QX(2004)..  - (0.01)*GRW(2004) - (1.01)*X(2003) + X(2004) =E= 0 ;
+     
+      (LHS = -0.01, INFES = 0.01 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- CETEQ  =E=  5CET TRANSFORMATION
+
+CETEQ(2002)..  X(2002) - (0.672058173066414)*E(2002)
+     
+      - (1.12311573729907)*DS(2002) =E= 0 ; (LHS = 0)
+     
+CETEQ(2003)..  X(2003) - (0.672058173066414)*E(2003)
+     
+      - (1.12311573729907)*DS(2003) =E= 0 ; (LHS = 0)
+     
+CETEQ(2004)..  X(2004) - (0.672058173066414)*E(2004)
+     
+      - (1.12311573729907)*DS(2004) =E= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- ARMG  =E=  6SYPPLY OF GOODS
+
+ARMG(2002)..  - (0.827656980565138)*M(2002) - (1.06330028527337)*DD(2002)
+     
+      + QS(2002) =E= 0 ; (LHS = 0)
+     
+ARMG(2003)..  - (0.827656980565138)*M(2003) - (1.06330028527337)*DD(2003)
+     
+      + QS(2003) =E= 0 ; (LHS = 0)
+     
+ARMG(2004)..  - (0.827656980565138)*M(2004) - (1.06330028527337)*DD(2004)
+     
+      + QS(2004) =E= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- DEM  =E=  7DOMESTIC DEMAND
+
+DEM(2002)..  C(2002) - QD(2002) + Z(2002) =E= -0.11724726 ;
+     
+      (LHS = -0.867968996279277, INFES = 0.750721736279277 ***)
+     
+DEM(2003)..  C(2003) - QD(2003) + Z(2003) =E= -0.119955671706 ;
+     
+      (LHS = -0.867968996279277, INFES = 0.748013324573277 ***)
+     
+DEM(2004)..  C(2004) - QD(2004) + Z(2004) =E= -0.122726647722409 ;
+     
+      (LHS = -0.867968996279277, INFES = 0.745242348556869 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- EDRAT  =E=  8E D RATIO
+
+EDRAT(2002)..  E(2002) - (0.406805488697996)*DS(2002)
+     
+      + (0.0678186220203423)*PD(2002) =E= 0 ;
+     
+      (LHS = -0.0228192556501525, INFES = 0.0228192556501525 ***)
+     
+EDRAT(2003)..  E(2003) - (0.406805488697996)*DS(2003)
+     
+      + (0.0678186220203423)*PD(2003) =E= 0 ;
+     
+      (LHS = -0.0228192556501525, INFES = 0.0228192556501525 ***)
+     
+EDRAT(2004)..  E(2004) - (0.406805488697996)*DS(2004)
+     
+      + (0.0678186220203423)*PD(2004) =E= 0 ;
+     
+      (LHS = -0.0228192556501525, INFES = 0.0228192556501525 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- MDRAT  =E=  9M D RATIO
+
+MDRAT(2002)..  M(2002) - (0.402005702434166)*DD(2002)
+     
+      - (0.094942802353625)*PD(2002) =E= 0 ;
+     
+      (LHS = -0.0252383221805355, INFES = 0.0252383221805355 ***)
+     
+MDRAT(2003)..  M(2003) - (0.402005702434166)*DD(2003)
+     
+      - (0.094942802353625)*PD(2003) =E= 0 ;
+     
+      (LHS = -0.0252383221805355, INFES = 0.0252383221805355 ***)
+     
+MDRAT(2004)..  M(2004) - (0.402005702434166)*DD(2004)
+     
+      - (0.094942802353625)*PD(2004) =E= 0 ;
+     
+      (LHS = -0.0252383221805355, INFES = 0.0252383221805355 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- INC  =E=  11TOTAL HOUSEHOLD INCOME
+
+INC(2002)..  - (2.3299)*X(2002) - (1)*PX(2002) + Y(2002) =E= 0.04 ;
+     
+      (LHS = -2.3289, INFES = 2.3689 ***)
+     
+INC(2003)..  - (2.3299)*X(2003) - (1)*PX(2003) + Y(2003) =E= 0.04 ;
+     
+      (LHS = -2.3289, INFES = 2.3689 ***)
+     
+INC(2004)..  - (2.3299)*X(2004) - (1)*PX(2004) + Y(2004) =E= 0.04 ;
+     
+      (LHS = -2.3289, INFES = 2.3689 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- CONS  =E=  13PRIVATE CONSUMPTION FUNCTION
+
+CONS(2002)..  C(2002) + (0.000163515572330351)*PT(2002)
+     
+      - (0.379333235626288)*Y(2002) =E= 0 ;
+     
+      (LHS = -0.000379333235626288, INFES = 0.000379333235626288 ***)
+     
+CONS(2003)..  C(2003) + (0.000163515572330351)*PT(2003)
+     
+      - (0.379333235626288)*Y(2003) =E= 0 ;
+     
+      (LHS = -0.000379333235626288, INFES = 0.000379333235626288 ***)
+     
+CONS(2004)..  C(2004) + (0.000163515572330351)*PT(2004)
+     
+      - (0.379333235626288)*Y(2004) =E= 0 ;
+     
+      (LHS = -0.000379333235626288, INFES = 0.000379333235626288 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- PTEQ  =E=  16SALES PRICE EQUATION
+
+PTEQ(2002)..  PT(2002) - 1.0841*PQ(2002) =E= 0 ;
+     
+      (LHS = -0.37716398, INFES = 0.37716398 ***)
+     
+PTEQ(2003)..  PT(2003) - 1.0841*PQ(2003) =E= 0 ;
+     
+      (LHS = -0.37716398, INFES = 0.37716398 ***)
+     
+PTEQ(2004)..  PT(2004) - 1.0841*PQ(2004) =E= 0 ;
+     
+      (LHS = -0.37716398, INFES = 0.37716398 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- PXEQ  =E=  17OUTPUT PRICE EQUATION
+
+PXEQ(2002)..  (2.3299)*X(2002) - 1.79*E(2002) - (2.6167)*DS(2002)
+     
+      - (0.72705094191577)*PD(2002) + (1)*PX(2002) =E= 0 ;
+     
+      (LHS = -0.0611530136817668, INFES = 0.0611530136817668 ***)
+     
+PXEQ(2003)..  (2.3299)*X(2003) - 1.79*E(2003) - (2.6167)*DS(2003)
+     
+      - (0.72705094191577)*PD(2003) + (1)*PX(2003) =E= 0 ;
+     
+      (LHS = -0.0611530136817668, INFES = 0.0611530136817668 ***)
+     
+PXEQ(2004)..  (2.3299)*X(2004) - 1.79*E(2004) - (2.6167)*DS(2004)
+     
+      - (0.72705094191577)*PD(2004) + (1)*PX(2004) =E= 0 ;
+     
+      (LHS = -0.0611530136817668, INFES = 0.0611530136817668 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- PQEQ  =E=  18SUPPLY PARICE EQUATION
+
+PQEQ(2002)..  - 1.8315*M(2002) - (2.6167)*DD(2002) + (2.4878)*QS(2002)
+     
+      - (0.72705094191577)*PD(2002) + (0.994091244345505)*PQ(2002) =E= 0 ;
+     
+      (LHS = 0.0815416840716927, INFES = 0.0815416840716927 ***)
+     
+PQEQ(2003)..  - 1.8315*M(2003) - (2.6167)*DD(2003) + (2.4878)*QS(2003)
+     
+      - (0.72705094191577)*PD(2003) + (0.994091244345505)*PQ(2003) =E= 0 ;
+     
+      (LHS = 0.0815416840716927, INFES = 0.0815416840716927 ***)
+     
+PQEQ(2004)..  - 1.8315*M(2004) - (2.6167)*DD(2004) + (2.4878)*QS(2004)
+     
+      - (0.72705094191577)*PD(2004) + (0.994091244345505)*PQ(2004) =E= 0 ;
+     
+      (LHS = 0.0815416840716927, INFES = 0.0815416840716927 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- DEQ  =E=  20EQUILIBRIUM IN THE DOMESTIC GOOD MARKET
+
+DEQ(2002)..  - DS(2002) + DD(2002) =E= 0 ; (LHS = 0)
+     
+DEQ(2003)..  - DS(2003) + DD(2003) =E= 0 ; (LHS = 0)
+     
+DEQ(2004)..  - DS(2004) + DD(2004) =E= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- QEQ  =E=  21EQUILIBRIUM IN THE COMPOSITE GOOD MARKET
+
+QEQ(2002)..  - QS(2002) + QD(2002) =E= 0 ; (LHS = 0)
+     
+QEQ(2003)..  - QS(2003) + QD(2003) =E= 0 ; (LHS = 0)
+     
+QEQ(2004)..  - QS(2004) + QD(2004) =E= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- CABAL  =E=  22EQUILIBRIUM IN THE COURRANT ACCOUNT BALANCE
+
+CABAL(2002)..  - 1.79*E(2002) + 1.665*M(2002) + RENFE(2002) =E= 0.3644 ;
+     
+      (LHS = -0.0439567104252627, INFES = 0.408356710425263 ***)
+     
+CABAL(2003)..  - 1.79*E(2003) + 1.665*M(2003) + RENFE(2003) =E= 0.3644 ;
+     
+      (LHS = -0.0439567104252627, INFES = 0.408356710425263 ***)
+     
+CABAL(2004)..  - 1.79*E(2004) + 1.665*M(2004) + RENFE(2004) =E= 0.3644 ;
+     
+      (LHS = -0.0439567104252627, INFES = 0.408356710425263 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- QDEBT  =E=  DEBT ACCUMULATION
+
+QDEBT(2002)..  DEBT(2002) =E= 1.968 ; (LHS = 0, INFES = 1.968 ***)
+     
+QDEBT(2003)..  - DEBT(2002) + DEBT(2003) =E= 0.218 ;
+     
+      (LHS = 0, INFES = 0.218 ***)
+     
+QDEBT(2004)..  - DEBT(2003) + DEBT(2004) =E= 0.218 ;
+     
+      (LHS = 0, INFES = 0.218 ***)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+
+---- QRENFE  =E=  INTERESTS ON LOANS
+
+QRENFE(2002)..  - 0.06*DEBT(2002) + RENFE(2002) =E= 0 ; (LHS = 0)
+     
+QRENFE(2003)..  - 0.06*DEBT(2003) + RENFE(2003) =E= 0 ; (LHS = 0)
+     
+QRENFE(2004)..  - 0.06*DEBT(2004) + RENFE(2004) =E= 0 ; (LHS = 0)
+     
+REMAINING 6 ENTRIES SKIPPED
+
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 3
+123model3D
+Column Listing      SOLVE model1 Using MCP From line 216
+
+
+---- FBC  INVERSION SOBRE PIB EN PORCENTAJE
+
+FBC(2002)
+                (.LO, .L, .UP = -INF, 0.09, +INF)
+       (1)      QFBC(2002)
+        0.2829  QGRW(2003)
+
+FBC(2003)
+                (.LO, .L, .UP = -INF, 0.09, +INF)
+       (1)      QFBC(2003)
+       -0.3552  QGRW(2003)
+        0.2829  QGRW(2004)
+
+FBC(2004)
+                (.LO, .L, .UP = -INF, 0.09, +INF)
+       (1)      QFBC(2004)
+       -0.3552  QGRW(2004)
+        0.2829  QGRW(2005)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- GRW  TASA DE CRECIMIENTO DEL PIB EN PORCENTAJE
+
+GRW(2002)
+                (.LO, .L, .UP = -INF, 1, +INF)
+        1       QGRW(2002)
+       -0.2024  QGRW(2003)
+
+GRW(2003)
+                (.LO, .L, .UP = -INF, 1, +INF)
+        1       QGRW(2003)
+       -0.2024  QGRW(2004)
+      (-0.01)   QX(2003)
+
+GRW(2004)
+                (.LO, .L, .UP = -INF, 1, +INF)
+        1       QGRW(2004)
+       -0.2024  QGRW(2005)
+      (-0.01)   QX(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- X  1 REAL OUTPUT
+
+X(2002)
+                (.LO, .L, .UP = -INF, 1, +INF)
+       (0.09)   QFBC(2002)
+        1       QX(2002)
+      (-1.01)   QX(2003)
+        1       CETEQ(2002)
+      (-2.3299) INC(2002)
+       (2.3299) PXEQ(2002)
+
+X(2003)
+                (.LO, .L, .UP = -INF, 1, +INF)
+       (0.09)   QFBC(2003)
+        1       QX(2003)
+      (-1.01)   QX(2004)
+        1       CETEQ(2003)
+      (-2.3299) INC(2003)
+       (2.3299) PXEQ(2003)
+
+X(2004)
+                (.LO, .L, .UP = -INF, 1, +INF)
+       (0.09)   QFBC(2004)
+        1       QX(2004)
+      (-1.01)   QX(2005)
+        1       CETEQ(2004)
+      (-2.3299) INC(2004)
+       (2.3299) PXEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- C  4 REAL AGGREGATE CONSUMPTION
+
+C(2002)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       DEM(2002)
+        1       CONS(2002)
+
+C(2003)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       DEM(2003)
+        1       CONS(2003)
+
+C(2004)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       DEM(2004)
+        1       CONS(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- E  6 REAL EXPORTS
+
+E(2002)
+                (.LO, .L, .UP = -INF, 0.272949058084231, +INF)
+      (-0.6721) CETEQ(2002)
+        1       EDRAT(2002)
+       -1.79    PXEQ(2002)
+       -1.79    CABAL(2002)
+
+E(2003)
+                (.LO, .L, .UP = -INF, 0.272949058084231, +INF)
+      (-0.6721) CETEQ(2003)
+        1       EDRAT(2003)
+       -1.79    PXEQ(2003)
+       -1.79    CABAL(2003)
+
+E(2004)
+                (.LO, .L, .UP = -INF, 0.272949058084231, +INF)
+      (-0.6721) CETEQ(2004)
+        1       EDRAT(2004)
+       -1.79    PXEQ(2004)
+       -1.79    CABAL(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- M  7 REAL IMPORTS
+
+M(2002)
+                (.LO, .L, .UP = -INF, 0.267040302429736, +INF)
+      (-0.8277) ARMG(2002)
+        1       MDRAT(2002)
+       -1.8315  PQEQ(2002)
+        1.665   CABAL(2002)
+
+M(2003)
+                (.LO, .L, .UP = -INF, 0.267040302429736, +INF)
+      (-0.8277) ARMG(2003)
+        1       MDRAT(2003)
+       -1.8315  PQEQ(2003)
+        1.665   CABAL(2003)
+
+M(2004)
+                (.LO, .L, .UP = -INF, 0.267040302429736, +INF)
+      (-0.8277) ARMG(2004)
+        1       MDRAT(2004)
+       -1.8315  PQEQ(2004)
+        1.665   CABAL(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- DS  8 REAL SUPPLY OF DOMESTIC GOOD
+
+DS(2002)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.1231) CETEQ(2002)
+      (-0.4068) EDRAT(2002)
+      (-2.6167) PXEQ(2002)
+       -1       DEQ(2002)
+
+DS(2003)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.1231) CETEQ(2003)
+      (-0.4068) EDRAT(2003)
+      (-2.6167) PXEQ(2003)
+       -1       DEQ(2003)
+
+DS(2004)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.1231) CETEQ(2004)
+      (-0.4068) EDRAT(2004)
+      (-2.6167) PXEQ(2004)
+       -1       DEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- DD  9 REAL DEMAND FOR DOMESTIC GOOD
+
+DD(2002)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.0633) ARMG(2002)
+      (-0.402)  MDRAT(2002)
+      (-2.6167) PQEQ(2002)
+        1       DEQ(2002)
+
+DD(2003)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.0633) ARMG(2003)
+      (-0.402)  MDRAT(2003)
+      (-2.6167) PQEQ(2003)
+        1       DEQ(2003)
+
+DD(2004)
+                (.LO, .L, .UP = -INF, 0.72705094191577, +INF)
+      (-1.0633) ARMG(2004)
+      (-0.402)  MDRAT(2004)
+      (-2.6167) PQEQ(2004)
+        1       DEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- QS  10 REAL SUPPLY OF COMPOSITE GOOD
+
+QS(2002)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+        1       ARMG(2002)
+       (2.4878) PQEQ(2002)
+       -1       QEQ(2002)
+
+QS(2003)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+        1       ARMG(2003)
+       (2.4878) PQEQ(2003)
+       -1       QEQ(2003)
+
+QS(2004)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+        1       ARMG(2004)
+       (2.4878) PQEQ(2004)
+       -1       QEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- QD  11 REAL DEMAND OFOR COMPOSITE GOOD
+
+QD(2002)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+       -1       DEM(2002)
+        1       QEQ(2002)
+
+QD(2003)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+       -1       DEM(2003)
+        1       QEQ(2003)
+
+QD(2004)
+                (.LO, .L, .UP = -INF, 0.994091244345505, +INF)
+       -1       DEM(2004)
+        1       QEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- Z  12 REAL AGGREGATE INVESTMENT
+
+Z(2002)
+                (.LO, .L, .UP = -INF, 0.126122248066228, +INF)
+     -100       QFBC(2002)
+        1       DEM(2002)
+
+Z(2003)
+                (.LO, .L, .UP = -INF, 0.126122248066228, +INF)
+     -100       QFBC(2003)
+        1       DEM(2003)
+
+Z(2004)
+                (.LO, .L, .UP = -INF, 0.126122248066228, +INF)
+     -100       QFBC(2004)
+        1       DEM(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- PD  15PRODUCER PRICE OF DOMESTIC GOOD
+
+PD(2002)
+                (.LO, .L, .UP = -INF, 2.6167, +INF)
+       (0.0678) EDRAT(2002)
+      (-0.0949) MDRAT(2002)
+      (-0.7271) PXEQ(2002)
+      (-0.7271) PQEQ(2002)
+
+PD(2003)
+                (.LO, .L, .UP = -INF, 2.6167, +INF)
+       (0.0678) EDRAT(2003)
+      (-0.0949) MDRAT(2003)
+      (-0.7271) PXEQ(2003)
+      (-0.7271) PQEQ(2003)
+
+PD(2004)
+                (.LO, .L, .UP = -INF, 2.6167, +INF)
+       (0.0678) EDRAT(2004)
+      (-0.0949) MDRAT(2004)
+      (-0.7271) PXEQ(2004)
+      (-0.7271) PQEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- PT  16SALE PRICE OF COMPOSITIE GOOD
+
+PT(2002)
+                (.LO, .L, .UP = -INF, 2.31986, +INF)
+       (0.0002) CONS(2002)
+        1       PTEQ(2002)
+
+PT(2003)
+                (.LO, .L, .UP = -INF, 2.31986, +INF)
+       (0.0002) CONS(2003)
+        1       PTEQ(2003)
+
+PT(2004)
+                (.LO, .L, .UP = -INF, 2.31986, +INF)
+       (0.0002) CONS(2004)
+        1       PTEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- PX  17PRICE OF AGGREGATE OUTPUT
+
+PX(2002)
+                (.LO, .L, .UP = -INF, 2.3299, +INF)
+      (-1)      INC(2002)
+       (1)      PXEQ(2002)
+
+PX(2003)
+                (.LO, .L, .UP = -INF, 2.3299, +INF)
+      (-1)      INC(2003)
+       (1)      PXEQ(2003)
+
+PX(2004)
+                (.LO, .L, .UP = -INF, 2.3299, +INF)
+      (-1)      INC(2004)
+       (1)      PXEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- PQ  18PRICE OF COMPOSITE GOOD
+
+PQ(2002)
+                (.LO, .L, .UP = -INF, 2.4878, +INF)
+       -1.0841  PTEQ(2002)
+       (0.9941) PQEQ(2002)
+
+PQ(2003)
+                (.LO, .L, .UP = -INF, 2.4878, +INF)
+       -1.0841  PTEQ(2003)
+       (0.9941) PQEQ(2003)
+
+PQ(2004)
+                (.LO, .L, .UP = -INF, 2.4878, +INF)
+       -1.0841  PTEQ(2004)
+       (0.9941) PQEQ(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- Y  23TOTAL NOMINAL INCOME
+
+Y(2002)
+                (.LO, .L, .UP = -INF, 0.001, +INF)
+        1       INC(2002)
+      (-0.3793) CONS(2002)
+
+Y(2003)
+                (.LO, .L, .UP = -INF, 0.001, +INF)
+        1       INC(2003)
+      (-0.3793) CONS(2003)
+
+Y(2004)
+                (.LO, .L, .UP = -INF, 0.001, +INF)
+        1       INC(2004)
+      (-0.3793) CONS(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- DEBT  DEBT ACCUMULATION IN US DOLLAR
+
+DEBT(2002)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       QDEBT(2002)
+       -1       QDEBT(2003)
+       -0.06    QRENFE(2002)
+
+DEBT(2003)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       QDEBT(2003)
+       -1       QDEBT(2004)
+       -0.06    QRENFE(2003)
+
+DEBT(2004)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       QDEBT(2004)
+       -1       QDEBT(2005)
+       -0.06    QRENFE(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+
+---- RENFE  INTEREST ON LOANS IN US DOLLAR
+
+RENFE(2002)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       CABAL(2002)
+        1       QRENFE(2002)
+
+RENFE(2003)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       CABAL(2003)
+        1       QRENFE(2003)
+
+RENFE(2004)
+                (.LO, .L, .UP = -INF, 0, +INF)
+        1       CABAL(2004)
+        1       QRENFE(2004)
+
+REMAINING 6 ENTRIES SKIPPED
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 4
+123model3D
+Model Statistics    SOLVE model1 Using MCP From line 216
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          18     SINGLE EQUATIONS          162
+BLOCKS OF VARIABLES          18     SINGLE VARIABLES          162
+NON ZERO ELEMENTS           480     NON LINEAR N-Z            214
+DERIVATIVE POOL              10     CONSTANT POOL              32
+CODE LENGTH               1,616
+
+
+GENERATION TIME      =        0.035 SECONDS      4 Mb  WIN220-143 Jul 27, 2005
+
+
+EXECUTION TIME       =        0.035 SECONDS      4 Mb  WIN220-143 Jul 27, 2005
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 5
+123model3D
+Solution Report     SOLVE model1 Using MCP From line 216
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model1              
+     TYPE    MCP                 
+     SOLVER  PATH                FROM LINE  216
+
+**** SOLVER STATUS     1 NORMAL COMPLETION         
+**** MODEL STATUS      1 OPTIMAL                   
+
+ RESOURCE USAGE, LIMIT          0.330      1000.000
+ ITERATION COUNT, LIMIT         4         10000
+ EVALUATION ERRORS              0             0
+
+PATH-C        Aug  1, 2005 WIN.PT.NA 22.0 021.032.041.VIS Path 4.6.05
+
+162 row/cols, 480 non-zeros, 1.83% dense.
+
+Path 4.6.05 (Wed Jul 27 08:39:08 2005)
+Written by Todd Munson, Steven Dirkse, and Michael Ferris
+
+INITIAL POINT STATISTICS
+Maximum of X. . . . . . . . . .  2.6167e+000 var: (PD(2002))
+Maximum of F. . . . . . . . . .  1.2522e+001 eqn: (QFBC(2003))
+Maximum of Grad F . . . . . . .  1.0000e+002 eqn: (QFBC(2002))
+                                            var: (Z(2002))
+
+INITIAL JACOBIAN NORM STATISTICS
+Maximum Row Norm. . . . . . . .  1.0109e+002 eqn: (QFBC(2003))
+Minimum Row Norm. . . . . . . .  1.0102e+000 eqn: (QX(2003))
+Maximum Column Norm . . . . . .  1.0100e+002 var: (Z(2002))
+Minimum Column Norm . . . . . .  1.0002e+000 var: (PT(2002))
+
+FINAL STATISTICS
+Inf-Norm of Complementarity . .  7.0614e-011 eqn: (QFBC(2010))
+Inf-Norm of Normal Map. . . . .  7.0614e-011 eqn: (QFBC(2010))
+Inf-Norm of Minimum Map . . . .  7.0614e-011 eqn: (QFBC(2010))
+Inf-Norm of Fischer Function. .  7.0614e-011 eqn: (QFBC(2010))
+Inf-Norm of Grad Fischer Fcn. .  7.0614e-009 eqn: (PTEQ(2010))
+Two-Norm of Grad Fischer Fcn. .  7.5879e-009
+
+FINAL POINT STATISTICS
+Maximum of X. . . . . . . . . .  1.6211e+001 var: (FBC(2002))
+Maximum of F. . . . . . . . . .  7.0614e-011 eqn: (QFBC(2010))
+Maximum of Grad F . . . . . . .  1.0000e+002 eqn: (QFBC(2002))
+                                            var: (Z(2002))
+
+
+---- EQU QFBC  2B DEFINICION DE FBC EN PORCENTAJE
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .       16.211      
+2003      .         .         .       15.848      
+2004      .         .         .       15.524      
+2005      .         .         .       15.220      
+2006      .         .         .       14.932      
+2007      .         .         .       14.223      
+2008      .         .         .       13.862      
+2009      .         .         .       13.589      
+2010      .         .         .       13.349      
+
+---- EQU QGRW  2C TASA DE CRECIMIENTO DEL PIB
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     2.000     2.000     2.000     2.000      
+2003     2.750     2.750     2.750     4.198      
+2004     2.750     2.750     2.750     4.630      
+2005     2.750     2.750     2.750     4.701      
+2006     2.750     2.750     2.750     4.700      
+2007    -3.572    -3.572    -3.572    -1.793      
+2008     2.750     2.750     2.750     3.287      
+2009     2.750     2.750     2.750     4.321      
+2010     2.750     2.750     2.750     4.522      
+
+---- EQU QX  3FUNCION DE PRODUCCION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     1.020     1.020     1.020     1.020      
+2003      .         .         .        1.063      
+2004      .         .         .        1.112      
+2005      .         .         .        1.164      
+2006      .         .         .        1.219      
+2007      .         .         .        1.197      
+2008      .         .         .        1.237      
+2009      .         .         .        1.290      
+2010      .         .         .        1.348      
+
+---- EQU CETEQ  5CET TRANSFORMATION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.847      
+2003      .         .         .        0.881      
+2004      .         .         .        0.919      
+2005      .         .         .        0.961      
+2006      .         .         .        1.004      
+2007      .         .         .        0.986      
+2008      .         .         .        1.017      
+2009      .         .         .        1.060      
+2010      .         .         .        1.106      
+
+---- EQU ARMG  6SYPPLY OF GOODS
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.248      
+2003      .         .         .        0.262      
+2004      .         .         .        0.278      
+2005      .         .         .        0.294      
+2006      .         .         .        0.312      
+2007      .         .         .        0.308      
+2008      .         .         .        0.321      
+2009      .         .         .        0.338      
+2010      .         .         .        0.357      
+
+---- EQU DEM  7DOMESTIC DEMAND
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002    -0.117    -0.117    -0.117     0.415      
+2003    -0.120    -0.120    -0.120     0.422      
+2004    -0.123    -0.123    -0.123     0.431      
+2005    -0.126    -0.126    -0.126     0.441      
+2006    -0.128    -0.128    -0.128     0.452      
+2007    -0.131    -0.131    -0.131     0.440      
+2008    -0.134    -0.134    -0.134     0.446      
+2009    -0.138    -0.138    -0.138     0.457      
+2010    -0.141    -0.141    -0.141     0.469      
+
+---- EQU EDRAT  8E D RATIO
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.758      
+2003      .         .         .        0.788      
+2004      .         .         .        0.823      
+2005      .         .         .        0.860      
+2006      .         .         .        0.898      
+2007      .         .         .        0.881      
+2008      .         .         .        0.908      
+2009      .         .         .        0.946      
+2010      .         .         .        0.987      
+
+---- EQU MDRAT  9M D RATIO
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.758      
+2003      .         .         .        0.788      
+2004      .         .         .        0.823      
+2005      .         .         .        0.860      
+2006      .         .         .        0.898      
+2007      .         .         .        0.881      
+2008      .         .         .        0.908      
+2009      .         .         .        0.946      
+2010      .         .         .        0.987      
+
+---- EQU INC  11TOTAL HOUSEHOLD INCOME
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     0.040     0.040     0.040     1.129      
+2003     0.040     0.040     0.040     1.169      
+2004     0.040     0.040     0.040     1.215      
+2005     0.040     0.040     0.040     1.264      
+2006     0.040     0.040     0.040     1.315      
+2007     0.040     0.040     0.040     1.288      
+2008     0.040     0.040     0.040     1.323      
+2009     0.040     0.040     0.040     1.373      
+2010     0.040     0.040     0.040     1.427      
+
+---- EQU CONS  13PRIVATE CONSUMPTION FUNCTION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        1.129      
+2003      .         .         .        1.169      
+2004      .         .         .        1.215      
+2005      .         .         .        1.264      
+2006      .         .         .        1.315      
+2007      .         .         .        1.288      
+2008      .         .         .        1.323      
+2009      .         .         .        1.373      
+2010      .         .         .        1.427      
+
+---- EQU PTEQ  16SALES PRICE EQUATION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.165      
+2003      .         .         .        0.168      
+2004      .         .         .        0.173      
+2005      .         .         .        0.177      
+2006      .         .         .        0.182      
+2007      .         .         .        0.170      
+2008      .         .         .        0.171      
+2009      .         .         .        0.175      
+2010      .         .         .        0.180      
+
+---- EQU PXEQ  17OUTPUT PRICE EQUATION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        3.760      
+2003      .         .         .        3.664      
+2004      .         .         .        3.571      
+2005      .         .         .        3.485      
+2006      .         .         .        3.407      
+2007      .         .         .        3.373      
+2008      .         .         .        3.309      
+2009      .         .         .        3.245      
+2010      .         .         .        3.184      
+
+---- EQU PQEQ  18SUPPLY PARICE EQUATION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        3.464      
+2003      .         .         .        3.394      
+2004      .         .         .        3.326      
+2005      .         .         .        3.263      
+2006      .         .         .        3.205      
+2007      .         .         .        3.180      
+2008      .         .         .        3.132      
+2009      .         .         .        3.084      
+2010      .         .         .        3.039      
+
+---- EQU DEQ  20EQUILIBRIUM IN THE DOMESTIC GOOD MARKET
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        3.229      
+2003      .         .         .        3.157      
+2004      .         .         .        3.089      
+2005      .         .         .        3.026      
+2006      .         .         .        2.968      
+2007      .         .         .        2.943      
+2008      .         .         .        2.896      
+2009      .         .         .        2.848      
+2010      .         .         .        2.804      
+
+---- EQU QEQ  21EQUILIBRIUM IN THE COMPOSITE GOOD MARKET
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        3.195      
+2003      .         .         .        3.130      
+2004      .         .         .        3.068      
+2005      .         .         .        3.010      
+2006      .         .         .        2.956      
+2007      .         .         .        2.933      
+2008      .         .         .        2.889      
+2009      .         .         .        2.845      
+2010      .         .         .        2.803      
+
+---- EQU CABAL  22EQUILIBRIUM IN THE COURRANT ACCOUNT BALANCE
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     0.364     0.364     0.364     3.333      
+2003     0.364     0.364     0.364     3.396      
+2004     0.364     0.364     0.364     3.475      
+2005     0.364     0.364     0.364     3.563      
+2006     0.364     0.364     0.364     3.657      
+2007     0.364     0.364     0.364     3.563      
+2008     0.364     0.364     0.364     3.621      
+2009     0.364     0.364     0.364     3.714      
+2010     0.364     0.364     0.364     3.821      
+
+---- EQU QDEBT  DEBT ACCUMULATION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     1.968     1.968     1.968     1.968      
+2003     0.218     0.218     0.218     2.186      
+2004     0.218     0.218     0.218     2.404      
+2005     0.218     0.218     0.218     2.622      
+2006     0.218     0.218     0.218     2.840      
+2007     0.218     0.218     0.218     3.058      
+2008     0.218     0.218     0.218     3.276      
+2009     0.218     0.218     0.218     3.494      
+2010     0.218     0.218     0.218     3.712      
+
+---- EQU QRENFE  INTERESTS ON LOANS
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002      .         .         .        0.118      
+2003      .         .         .        0.131      
+2004      .         .         .        0.144      
+2005      .         .         .        0.157      
+2006      .         .         .        0.170      
+2007      .         .         .        0.183      
+2008      .         .         .        0.197      
+2009      .         .         .        0.210      
+2010      .         .         .        0.223      
+
+---- VAR FBC  INVERSION SOBRE PIB EN PORCENTAJE
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF     16.211     +INF       .         
+2003     -INF     15.848     +INF       .         
+2004     -INF     15.524     +INF       .         
+2005     -INF     15.220     +INF       .         
+2006     -INF     14.932     +INF       .         
+2007     -INF     14.223     +INF       .         
+2008     -INF     13.862     +INF       .         
+2009     -INF     13.589     +INF       .         
+2010     -INF     13.349     +INF       .         
+
+---- VAR GRW  TASA DE CRECIMIENTO DEL PIB EN PORCENTAJE
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      2.000     +INF       .         
+2003     -INF      4.198     +INF       .         
+2004     -INF      4.630     +INF       .         
+2005     -INF      4.701     +INF       .         
+2006     -INF      4.700     +INF       .         
+2007     -INF     -1.793     +INF       .         
+2008     -INF      3.287     +INF       .         
+2009     -INF      4.321     +INF       .         
+2010     -INF      4.522     +INF       .         
+
+---- VAR X  1 REAL OUTPUT
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      1.020     +INF       .         
+2003     -INF      1.063     +INF       .         
+2004     -INF      1.112     +INF       .         
+2005     -INF      1.164     +INF       .         
+2006     -INF      1.219     +INF       .         
+2007     -INF      1.197     +INF       .         
+2008     -INF      1.237     +INF       .         
+2009     -INF      1.290     +INF       .         
+2010     -INF      1.348     +INF       .         
+
+---- VAR C  4 REAL AGGREGATE CONSUMPTION
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.847     +INF       .         
+2003     -INF      0.881     +INF       .         
+2004     -INF      0.919     +INF       .         
+2005     -INF      0.961     +INF       .         
+2006     -INF      1.004     +INF       .         
+2007     -INF      0.986     +INF       .         
+2008     -INF      1.017     +INF       .         
+2009     -INF      1.060     +INF       .         
+2010     -INF      1.106     +INF       .         
+
+---- VAR E  6 REAL EXPORTS
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.248     +INF       .         
+2003     -INF      0.262     +INF       .         
+2004     -INF      0.278     +INF       .         
+2005     -INF      0.294     +INF       .         
+2006     -INF      0.312     +INF       .         
+2007     -INF      0.308     +INF       .         
+2008     -INF      0.321     +INF       .         
+2009     -INF      0.338     +INF       .         
+2010     -INF      0.357     +INF       .         
+
+---- VAR M  7 REAL IMPORTS
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.415     +INF       .         
+2003     -INF      0.422     +INF       .         
+2004     -INF      0.431     +INF       .         
+2005     -INF      0.441     +INF       .         
+2006     -INF      0.452     +INF       .         
+2007     -INF      0.440     +INF       .         
+2008     -INF      0.446     +INF       .         
+2009     -INF      0.457     +INF       .         
+2010     -INF      0.469     +INF       .         
+
+---- VAR DS  8 REAL SUPPLY OF DOMESTIC GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.758     +INF       .         
+2003     -INF      0.788     +INF       .         
+2004     -INF      0.823     +INF       .         
+2005     -INF      0.860     +INF       .         
+2006     -INF      0.898     +INF       .         
+2007     -INF      0.881     +INF       .         
+2008     -INF      0.908     +INF       .         
+2009     -INF      0.946     +INF       .         
+2010     -INF      0.987     +INF       .         
+
+---- VAR DD  9 REAL DEMAND FOR DOMESTIC GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.758     +INF       .         
+2003     -INF      0.788     +INF       .         
+2004     -INF      0.823     +INF       .         
+2005     -INF      0.860     +INF       .         
+2006     -INF      0.898     +INF       .         
+2007     -INF      0.881     +INF       .         
+2008     -INF      0.908     +INF       .         
+2009     -INF      0.946     +INF       .         
+2010     -INF      0.987     +INF       .         
+
+---- VAR QS  10 REAL SUPPLY OF COMPOSITE GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      1.129     +INF       .         
+2003     -INF      1.169     +INF       .         
+2004     -INF      1.215     +INF       .         
+2005     -INF      1.264     +INF       .         
+2006     -INF      1.315     +INF       .         
+2007     -INF      1.288     +INF       .         
+2008     -INF      1.323     +INF       .         
+2009     -INF      1.373     +INF       .         
+2010     -INF      1.427     +INF       .         
+
+---- VAR QD  11 REAL DEMAND OFOR COMPOSITE GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      1.129     +INF       .         
+2003     -INF      1.169     +INF       .         
+2004     -INF      1.215     +INF       .         
+2005     -INF      1.264     +INF       .         
+2006     -INF      1.315     +INF       .         
+2007     -INF      1.288     +INF       .         
+2008     -INF      1.323     +INF       .         
+2009     -INF      1.373     +INF       .         
+2010     -INF      1.427     +INF       .         
+
+---- VAR Z  12 REAL AGGREGATE INVESTMENT
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.165     +INF       .         
+2003     -INF      0.168     +INF       .         
+2004     -INF      0.173     +INF       .         
+2005     -INF      0.177     +INF       .         
+2006     -INF      0.182     +INF       .         
+2007     -INF      0.170     +INF       .         
+2008     -INF      0.171     +INF       .         
+2009     -INF      0.175     +INF       .         
+2010     -INF      0.180     +INF       .         
+
+---- VAR PD  15PRODUCER PRICE OF DOMESTIC GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      3.760     +INF       .         
+2003     -INF      3.664     +INF       .         
+2004     -INF      3.571     +INF       .         
+2005     -INF      3.485     +INF       .         
+2006     -INF      3.407     +INF       .         
+2007     -INF      3.373     +INF       .         
+2008     -INF      3.309     +INF       .         
+2009     -INF      3.245     +INF       .         
+2010     -INF      3.184     +INF       .         
+
+---- VAR PT  16SALE PRICE OF COMPOSITIE GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      3.464     +INF       .         
+2003     -INF      3.394     +INF       .         
+2004     -INF      3.326     +INF       .         
+2005     -INF      3.263     +INF       .         
+2006     -INF      3.205     +INF       .         
+2007     -INF      3.180     +INF       .         
+2008     -INF      3.132     +INF       .         
+2009     -INF      3.084     +INF       .         
+2010     -INF      3.039     +INF       .         
+
+---- VAR PX  17PRICE OF AGGREGATE OUTPUT
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      3.229     +INF       .         
+2003     -INF      3.157     +INF       .         
+2004     -INF      3.089     +INF       .         
+2005     -INF      3.026     +INF       .         
+2006     -INF      2.968     +INF       .         
+2007     -INF      2.943     +INF       .         
+2008     -INF      2.896     +INF       .         
+2009     -INF      2.848     +INF       .         
+2010     -INF      2.804     +INF       .         
+
+---- VAR PQ  18PRICE OF COMPOSITE GOOD
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      3.195     +INF       .         
+2003     -INF      3.130     +INF       .         
+2004     -INF      3.068     +INF       .         
+2005     -INF      3.010     +INF       .         
+2006     -INF      2.956     +INF       .         
+2007     -INF      2.933     +INF       .         
+2008     -INF      2.889     +INF       .         
+2009     -INF      2.845     +INF       .         
+2010     -INF      2.803     +INF       .         
+
+---- VAR Y  23TOTAL NOMINAL INCOME
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      3.333     +INF       .         
+2003     -INF      3.396     +INF       .         
+2004     -INF      3.475     +INF       .         
+2005     -INF      3.563     +INF       .         
+2006     -INF      3.657     +INF       .         
+2007     -INF      3.563     +INF       .         
+2008     -INF      3.621     +INF       .         
+2009     -INF      3.714     +INF       .         
+2010     -INF      3.821     +INF       .         
+
+---- VAR DEBT  DEBT ACCUMULATION IN US DOLLAR
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      1.968     +INF       .         
+2003     -INF      2.186     +INF       .         
+2004     -INF      2.404     +INF       .         
+2005     -INF      2.622     +INF       .         
+2006     -INF      2.840     +INF       .         
+2007     -INF      3.058     +INF       .         
+2008     -INF      3.276     +INF       .         
+2009     -INF      3.494     +INF       .         
+2010     -INF      3.712     +INF       .         
+
+---- VAR RENFE  INTEREST ON LOANS IN US DOLLAR
+
+        LOWER     LEVEL     UPPER    MARGINAL
+
+2002     -INF      0.118     +INF       .         
+2003     -INF      0.131     +INF       .         
+2004     -INF      0.144     +INF       .         
+2005     -INF      0.157     +INF       .         
+2006     -INF      0.170     +INF       .         
+2007     -INF      0.183     +INF       .         
+2008     -INF      0.197     +INF       .         
+2009     -INF      0.210     +INF       .         
+2010     -INF      0.223     +INF       .         
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+                             0  REDEFINED
+                             0     ERRORS
+GAMS Rev 143  Intel/MS Windows                          11/06/05 20:04:23 Page 6
+123model3D
+E x e c u t i o n
+
+
+----    249 PARAMETER TAX  10 GOVERNMENT NOMINAL REVENU
+
+2002 0.512,    2003 0.518,    2004 0.526,    2005 0.535,    2006 0.545
+2007 0.533,    2008 0.538,    2009 0.548,    2010 0.559
+
+
+----    249 PARAMETER SG  23 GOVERNMENT NOMINAL INCOME OR SAVING
+
+2002 -0.012,    2003 -0.020,    2004 -0.026,    2005 -0.032,    2006 -0.037
+2007 -0.069,    2008 -0.079,    2009 -0.086,    2010 -0.091
+
+
+----    249 PARAMETER S  12 NOMINAL TOTAL SAVING
+
+2002 0.573,    2003 0.572,    2004 0.574,    2005 0.578,    2006 0.583
+2007 0.541,    2008 0.537,    2009 0.541,    2010 0.547
+
+
+----    250 PARAMETER TRAD  INVESTMENT LESS TOTAL SAVING
+
+2002 -3.3307E-16,    2003 -1.1102E-16,    2004 -5.5511E-16,    2005 2.22045E-16
+2006 4.44089E-16,    2007 3.66374E-15,    2008 1.57652E-14,    2009 6.22835E-14
+2010 1.91958E-13
+
+
+----    250 PARAMETER TRADB  COURRANT ACCOUNT
+
+2002 0.218,    2003 0.218,    2004 0.218,    2005 0.218,    2006 0.218
+2007 0.218,    2008 0.218,    2009 0.218,    2010 0.218
+
+
+----    251 VARIABLE X.L  1 REAL OUTPUT
+
+2002 1.020,    2003 1.063,    2004 1.112,    2005 1.164,    2006 1.219
+2007 1.197,    2008 1.237,    2009 1.290,    2010 1.348
+
+
+----    251 VARIABLE E.L  6 REAL EXPORTS
+
+2002 0.248,    2003 0.262,    2004 0.278,    2005 0.294,    2006 0.312
+2007 0.308,    2008 0.321,    2009 0.338,    2010 0.357
+
+
+----    251 VARIABLE M.L  7 REAL IMPORTS
+
+2002 0.415,    2003 0.422,    2004 0.431,    2005 0.441,    2006 0.452
+2007 0.440,    2008 0.446,    2009 0.457,    2010 0.469
+
+
+----    251 VARIABLE GRW.L  TASA DE CRECIMIENTO DEL PIB EN PORCENTAJE
+
+2002  2.000,    2003  4.198,    2004  4.630,    2005  4.701,    2006  4.700
+2007 -1.793,    2008  3.287,    2009  4.321,    2010  4.522
+
+
+----    251 VARIABLE Z.L  12 REAL AGGREGATE INVESTMENT
+
+2002 0.165,    2003 0.168,    2004 0.173,    2005 0.177,    2006 0.182
+2007 0.170,    2008 0.171,    2009 0.175,    2010 0.180
+
+
+----    251 VARIABLE PX.L  17PRICE OF AGGREGATE OUTPUT
+
+2002 3.229,    2003 3.157,    2004 3.089,    2005 3.026,    2006 2.968
+2007 2.943,    2008 2.896,    2009 2.848,    2010 2.804
+
+
+----    252 PARAMETER ST                   =        0.600  ELASTICITY FOR CET
+            PARAMETER SQ                   =        0.850  ELASTICITY FOR CESQ
+            PARAMETER RT                   =        2.667  RHO FOR CET
+            PARAMETER BT                   =        0.754  SHARE FOR CET
+            PARAMETER AT                   =        2.156  SCALE FOR CET
+
+----    253 PARAMETER RQ                   =        0.176  RHO PARA CESQ
+            PARAMETER BQ                   =        0.193  SHARE FOR CESQ
+            PARAMETER AQ                   =        1.683  SCALE FOR CESQ
+
+----    254 PARAMETER X0                   =        1.000  GDP INICITAL NORMALIZ
+                                                           ADO
+
+
+EXECUTION TIME       =        0.054 SECONDS      3 Mb  WIN220-143 Jul 27, 2005
+
+
+USER: GAMS Development Corporation, Washington, DC   G871201/0000CA-ANY
+      Free Demo,  202-342-0180,  sales@gams.com,  www.gams.com   DC0000
+
+
+**** FILE SUMMARY
+
+Input      C:\Alvaro\Modelo\short2.gms
+Output     C:\Mis documentos\gamsdir\short2.lst
